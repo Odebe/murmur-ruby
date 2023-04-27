@@ -1,0 +1,47 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    activesupport (7.0.4.3)
+      concurrent-ruby (~> 1.0, >= 1.0.2)
+      i18n (>= 1.6, < 2)
+      minitest (>= 5.1)
+      tzinfo (~> 2.0)
+    async (2.5.0)
+      console (~> 1.10)
+      io-event (~> 1.1)
+      timers (~> 4.1)
+    async-io (1.34.3)
+      async
+    concurrent-ruby (1.2.2)
+    console (1.16.2)
+      fiber-local
+    fiber-local (1.0.0)
+    i18n (1.13.0)
+      concurrent-ruby (~> 1.0)
+    io-event (1.1.7)
+    middleware (0.1.0)
+    minitest (5.18.0)
+    protobuf (3.10.7)
+      activesupport (>= 3.2)
+      middleware
+      thor
+      thread_safe
+    rake (13.0.6)
+    thor (1.2.1)
+    thread_safe (0.3.6)
+    timers (4.3.5)
+    tzinfo (2.0.6)
+      concurrent-ruby (~> 1.0)
+    zeitwerk (2.6.7)
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  async-io
+  protobuf
+  rake
+  zeitwerk
+
+BUNDLED WITH
+   2.4.4
