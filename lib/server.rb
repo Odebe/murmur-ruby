@@ -4,43 +4,19 @@ require 'async/io'
 require 'async/io/stream'
 
 class Server
-  include MessageHandlers
+  attr_reader :endpoint, :rom
 
-  attr_reader :endpoint
-
-  def initialize(endpoint)
+  def initialize(endpoint, rom)
     @endpoint = endpoint
+    @rom      = rom
   end
 
   def start!
-    Async do
-      endpoint.accept do |socket|
-        stream = Async::IO::Stream.new(socket)
-        client = Client.new(stream)
+    endpoint.accept do |socket|
+      socket = Async::IO::Stream.new(socket)
+      stream = Proto::Stream.new(socket)
 
-        connected(client)
-      end
+      Client::Handler.new(stream, rom).start!
     end
-  end
-
-  private
-
-  def connected(client)
-    client_loop(client)
-  end
-
-  def client_loop(client)
-    loop do
-      message = client.message
-      break if message.nil?
-
-      Async { handle message }
-    end
-  rescue EOFError
-    # It's okay, client has disconnected.
-  end
-
-  def handle_not_defined(message)
-    puts "Undefined message: #{message.inspect}"
   end
 end

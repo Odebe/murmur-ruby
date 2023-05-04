@@ -15,9 +15,33 @@ GEM
     concurrent-ruby (1.2.2)
     console (1.16.2)
       fiber-local
+    dry-configurable (1.0.1)
+      dry-core (~> 1.0, < 2)
+      zeitwerk (~> 2.6)
+    dry-core (1.0.0)
+      concurrent-ruby (~> 1.0)
+      zeitwerk (~> 2.6)
+    dry-inflector (1.0.0)
+    dry-initializer (3.1.1)
+    dry-logic (1.5.0)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.0, < 2)
+      zeitwerk (~> 2.6)
+    dry-struct (1.6.0)
+      dry-core (~> 1.0, < 2)
+      dry-types (>= 1.7, < 2)
+      ice_nine (~> 0.11)
+      zeitwerk (~> 2.6)
+    dry-types (1.7.1)
+      concurrent-ruby (~> 1.0)
+      dry-core (~> 1.0)
+      dry-inflector (~> 1.0)
+      dry-logic (~> 1.4)
+      zeitwerk (~> 2.6)
     fiber-local (1.0.0)
     i18n (1.13.0)
       concurrent-ruby (~> 1.0)
+    ice_nine (0.11.2)
     io-event (1.1.7)
     middleware (0.1.0)
     minitest (5.18.0)
@@ -27,9 +51,32 @@ GEM
       thor
       thread_safe
     rake (13.0.6)
+    rom (5.3.0)
+      rom-changeset (~> 5.3, >= 5.3.0)
+      rom-core (~> 5.3, >= 5.3.0)
+      rom-repository (~> 5.3, >= 5.3.0)
+    rom-changeset (5.3.0)
+      dry-core (~> 1.0)
+      rom-core (~> 5.3)
+      transproc (~> 1.0, >= 1.1.0)
+    rom-core (5.3.0)
+      concurrent-ruby (~> 1.1)
+      dry-configurable (~> 1.0)
+      dry-core (~> 1.0)
+      dry-inflector (~> 1.0)
+      dry-initializer (~> 3.0, >= 3.0.1)
+      dry-struct (~> 1.0)
+      dry-types (~> 1.6)
+      transproc (~> 1.0, >= 1.1.0)
+    rom-repository (5.3.0)
+      dry-core (~> 1.0)
+      dry-initializer (~> 3.0, >= 3.0.1)
+      rom-core (~> 5.3, >= 5.3.0)
+    statesman (10.0.0)
     thor (1.2.1)
     thread_safe (0.3.6)
     timers (4.3.5)
+    transproc (1.1.1)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     zeitwerk (2.6.7)
@@ -39,8 +86,12 @@ PLATFORMS
 
 DEPENDENCIES
   async-io
+  concurrent-ruby
+  dry-types
   protobuf
   rake
+  rom
+  statesman (~> 10.0.0)
   zeitwerk
 
 BUNDLED WITH

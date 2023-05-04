@@ -32,6 +32,16 @@ module Proto
       25 => ::Proto::Mumble::SuggestConfig
     }.freeze
 
+    CLASS_TO_TYPE = TYPE_TO_CLASS.invert.freeze
+
+    def send_message(msg)
+      body = msg.encode
+
+      write_type msg.class
+      write_length body
+      write body
+    end
+
     def read_message
       type = read_type
       len  = read_length
@@ -52,6 +62,18 @@ module Proto
 
     def read_body(len)
       read(len)
+    end
+
+    def write_type(klass)
+      write [CLASS_TO_TYPE[klass]].pack('n')
+    end
+
+    def write_length(body)
+      write [body.size].pack('N')
+    end
+
+    def write(body)
+      @stream.write(body)
     end
 
     def read(size)
