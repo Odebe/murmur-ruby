@@ -9,14 +9,30 @@ module Persistence
         users.to_a
       end
 
+      def delete(user_id)
+        users
+          .dataset
+          .delete_if { |user| user[:id] == user_id }
+      end
+
       def all_users_state
-        users.map do |user|
-          Proto::Mumble::UserState.new(
-            session: user[:id],
-            name: user[:auth][:username],
-            channel_id: 0
-          )
-        end
+        users.map { |user| build_state(user) }
+      end
+
+      def state_by(user_id)
+        build_state(find(user_id))
+      end
+
+      def except_by(user_id)
+        users.reject { |user| user[:id] == user_id }
+      end
+
+      def build_state(user)
+        Proto::Mumble::UserState.new(
+          session: user[:id],
+          name: user[:auth][:username],
+          channel_id: 0
+        )
       end
 
       def find(user_id)
@@ -25,11 +41,12 @@ module Persistence
           .one
       end
 
-      def create
+      def create(queue_in:)
         users
           .command(:create)
           .call(
             id: IdRegistry.instance[:users],
+            queue_in: queue_in,
             version: {},
             auth: {}
           )

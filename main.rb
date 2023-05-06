@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 require 'concurrent-ruby'
+
+require 'dry-types'
 require 'rom'
 require 'rom-repository'
-require 'dry-types'
+
+require 'async/queue'
+require 'async/waiter'
 require 'async/io'
+
 require 'zeitwerk'
 
 $loader = Zeitwerk::Loader.new
@@ -14,6 +19,8 @@ $loader.setup
 settings = {
   host: '127.0.0.1',
   port: 64_738,
+  max_bandwidth: 72_000,
+  welcome_text: 'Hello world!',
   ssl: {
     cert: 'server.cert',
     key: 'server.key'
@@ -38,4 +45,4 @@ ssl_endpoint = Async::IO::Endpoint.ssl(
   ssl_context: ssl_context
 )
 
-Async { Server.new(ssl_endpoint, rom).start! }
+Async { Server.new(ssl_endpoint, rom, settings).start! }

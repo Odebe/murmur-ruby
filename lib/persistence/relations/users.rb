@@ -7,6 +7,8 @@ module Persistence
         attribute :id, Types::Integer
         primary_key :id
 
+        attribute :queue_in, Types.Instance(Async::Queue)
+
         attribute :version, Types::Hash.optional do
           attribute :version_v1, Types::Integer
           attribute :version_v2, Types::Integer

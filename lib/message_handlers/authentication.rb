@@ -17,11 +17,16 @@ module MessageHandlers
       @stream.send_message(
         Proto::Mumble::ServerSync.new(
           session: @user_id,
-          max_bandwidth: 72_000,
-          welcome_text: 'Hello world!',
+          max_bandwidth: settings[:max_bandwidth],
+          welcome_text: settings[:welcome_text],
           permissions: 1
         )
       )
+
+      current_state = users.state_by(@user_id)
+      users.except_by(@user_id).each do |user|
+        user[:queue_in] << current_state
+      end
     end
   end
 end
