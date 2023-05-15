@@ -6,21 +6,16 @@ module Actions
       def handle(message)
         users.set_auth(user_id, message)
 
-        rooms.all_channels_state.each { |state| reply state }
-        users.all_users_state.each { |state| reply state }
+        build(:all_channels).each { |state| reply state }
+        build(:all_users).each { |state| reply state }
 
-        server_sync =
-          Proto::Mumble::ServerSync.new(
-            session: user_id,
-            max_bandwidth: settings[:max_bandwidth],
-            welcome_text: settings[:welcome_text],
-            permissions: 1
-          )
-        reply server_sync
+        reply build(:server_sync, user_id: user_id)
 
-        current_state = users.state_by(user_id)
-        users.except_by(user_id).each do |user|
-          post current_state, to: user
+        current_user = users.find(user_id)
+        user_state = build(:user_state, user: current_user)
+
+        users.all.reject { |u| u == current_user }.each do |user|
+          post user_state, to: user
         end
       end
     end

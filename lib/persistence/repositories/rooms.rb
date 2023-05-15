@@ -5,6 +5,10 @@ module Persistence
     class Rooms < ROM::Repository[:rooms]
       auto_struct false
 
+      def all
+        rooms.to_a
+      end
+
       def create_root
         create_room(name: 'Root')
       end

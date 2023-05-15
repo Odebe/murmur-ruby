@@ -3,13 +3,8 @@
 module Actions
   class Base
     extend Dry::Initializer
-    extend Dry::Core::ClassAttributes
 
     include Persistence::Repos
-
-    defines :dispatcher
-
-    dispatcher Actions::Dispatch
 
     param :message
     param :rom
@@ -29,6 +24,13 @@ module Actions
 
     def message_type
       raise 'abstract method'
+    end
+
+    def build(name, input = {})
+      Messages::Registry
+        .call(name)
+        .new(rom, stream, settings, user_id)
+        .call(input)
     end
 
     def reply(message)
