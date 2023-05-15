@@ -2,21 +2,18 @@
 
 module Client
   class Handler
-    include ::MessageHandlers::Mixin
-    include Repos
+    extend Dry::Initializer
 
-    attr_reader :settings, :waiter
+    include Persistence::Repos
 
-    def initialize(stream, rom, settings)
-      @waiter   = Async::Waiter.new
+    param :stream
+    param :rom
+    param :settings
 
-      @settings = settings
-      @rom      = rom
-
-      @user_id  = nil
-      @stream   = stream
-      @queue_in = Async::Queue.new
-    end
+    option :waiter,     default: -> { Async::Waiter.new }
+    option :queue_in,   default: -> { Async::Queue.new }
+    option :dispatcher, default: -> { Actions::Dispatch }
+    option :user_id,    default: -> { nil }
 
     def start!
       save_user
@@ -34,43 +31,40 @@ module Client
     def from_client_loop
       within_connection do
         loop do
-          message = @stream.read_message
+          message = stream.read_message
           break if message.nil?
 
-          with_halt { handle message }
+          action = dispatcher.call(message)
+          unless action
+            handle_not_defined(message)
+            next
+          end
+
+          action.new(message, rom, stream, settings, user_id).call
         end
       end
     end
 
     def to_client_loop
       within_connection do
-        @queue_in.each { |message| @stream.send_message(message) }
+        queue_in.each { |message| stream.send_message(message) }
       end
     end
 
     def save_user
-      @user_id = users.create(queue_in: @queue_in)[:id]
-    end
-
-    def with_halt(&block)
-      catch(:halt, &block)
-    end
-
-    def current_async(&block)
-      Async::Task.current.async do
-        block.call
-      end
+      @user_id = users.create(queue_in: queue_in)[:id]
     end
 
     def within_connection
       yield
     rescue EOFError
       # It's okay, client has disconnected.
-      users.delete(@user_id)
+    ensure
+      users.delete(user_id)
     end
 
-    def handle_not_defined(message, handler)
-      puts "Undefined message: #{message.inspect} by handler #{handler}"
+    def handle_not_defined(message)
+      puts "Undefined message: #{message.inspect}"
     end
   end
 end

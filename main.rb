@@ -1,7 +1,38 @@
 # frozen_string_literal: true
 
+module App
+  def self.root_path
+    Pathname(__dir__)
+  end
+
+  def self.lib_path
+    root_path.join('lib')
+  end
+
+  def self.persistence_path
+    lib_path.join('persistence')
+  end
+
+  # TODO: read from outside
+  def self.settings
+    {
+      host: '127.0.0.1',
+      port: 64_738,
+      max_bandwidth: 72_000,
+      welcome_text: 'Hello world!',
+      ssl: {
+        cert: 'server.cert',
+        key: 'server.key'
+      }
+    }
+  end
+end
+
+require 'byebug'
+
 require 'concurrent-ruby'
 
+require 'dry/core/class_attributes'
 require 'dry-types'
 require 'rom'
 require 'rom-repository'
@@ -12,37 +43,14 @@ require 'async/io'
 
 require 'zeitwerk'
 
-$loader = Zeitwerk::Loader.new
-$loader.push_dir("#{__dir__}/lib")
-$loader.setup
+loader = Zeitwerk::Loader.new
+loader.push_dir(App.lib_path)
+loader.setup
 
-settings = {
-  host: '127.0.0.1',
-  port: 64_738,
-  max_bandwidth: 72_000,
-  welcome_text: 'Hello world!',
-  ssl: {
-    cert: 'server.cert',
-    key: 'server.key'
-  }
-}
+server = Server.new(App.settings)
+server.setup_persistence!
+server.setup_endpoint!
 
-rom_conf = ROM::Configuration.new(:memory, 'memory://test')
-rom_conf.auto_registration("#{__dir__}/lib/persistence/")
-rom      = ROM.container(rom_conf)
+loader.eager_load
 
-rooms    = Persistence::Repositories::Rooms.new(rom)
-rooms.create_root
-
-$loader.eager_load
-
-ssl_context      = OpenSSL::SSL::SSLContext.new
-ssl_context.cert = OpenSSL::X509::Certificate.new(File.open(settings[:ssl][:cert]))
-ssl_context.key  = OpenSSL::PKey::RSA.new(File.open(settings[:ssl][:key]))
-
-ssl_endpoint = Async::IO::Endpoint.ssl(
-  settings[:host], settings[:port],
-  ssl_context: ssl_context
-)
-
-Async { Server.new(ssl_endpoint, rom, settings).start! }
+Async { server.start_tcp! }
