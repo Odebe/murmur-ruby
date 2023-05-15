@@ -9,5 +9,9 @@ module Persistence
     def rooms
       @rooms ||= ::Persistence::Repositories::Rooms.new(rom)
     end
+
+    def rom
+      state.rom
+    end
   end
 end

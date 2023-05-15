@@ -37,7 +37,11 @@ class Server
       socket = Async::IO::Stream.new(socket)
       stream = Proto::Stream.new(socket)
 
-      Client::Handler.new(stream, rom, settings).start!
+      Client::Handler.new(stream, state).start!
     end
+  end
+
+  def state
+    @state ||= ServerState.new(settings: settings, rom: rom)
   end
 end

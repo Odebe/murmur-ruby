@@ -7,8 +7,7 @@ module Client
     include Persistence::Repos
 
     param :stream
-    param :rom
-    param :settings
+    param :state
 
     option :waiter,     default: -> { Async::Waiter.new }
     option :queue_in,   default: -> { Async::Queue.new }
@@ -40,7 +39,7 @@ module Client
             next
           end
 
-          action.new(message, rom, stream, settings, user_id).call
+          action.new(message, stream, state, user_id).call
         end
       end
     end

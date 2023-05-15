@@ -7,9 +7,8 @@ module Actions
     include Persistence::Repos
 
     param :message
-    param :rom
     param :stream
-    param :settings
+    param :state
     param :user_id
 
     def call
@@ -29,7 +28,7 @@ module Actions
     def build(name, input = {})
       Messages::Registry
         .call(name)
-        .new(rom, stream, settings, user_id)
+        .new(state, stream, user_id)
         .call(input)
     end
 

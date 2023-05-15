@@ -6,13 +6,18 @@ module Messages
 
     include Persistence::Repos
 
-    param :rom
+    param :state
     param :stream
-    param :settings
     param :user_id
 
     def call(_input)
       raise 'abstract method'
+    end
+
+    private
+
+    def settings
+      state.settings
     end
   end
 end
