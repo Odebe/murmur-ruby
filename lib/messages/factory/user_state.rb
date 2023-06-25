@@ -5,8 +5,9 @@ module Messages
     class UserState < Registry[:user_state]
       def call(input)
         Proto::Mumble::UserState.new(
-          session: input[:user][:id],
-          name: input[:user][:auth][:username],
+          id:         input[:client][:user_id],
+          session:    input[:client][:session_id],
+          name:       input[:client][:username],
           channel_id: 0
         )
       end

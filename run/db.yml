@@ -1,0 +1,9 @@
+users: []
+rooms:
+  - id: 0
+    name: root
+    parent_id: null
+  - id: 1
+    name: test1
+    parent_id: 0
+

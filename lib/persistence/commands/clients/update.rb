@@ -2,9 +2,9 @@
 
 module Persistence
   module Commands
-    module Users
+    module Clients
       class Update < ROM::Memory::Commands::Update
-        relation :users
+        relation :clients
         register_as :update
       end
     end

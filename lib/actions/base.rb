@@ -4,12 +4,9 @@ module Actions
   class Base
     extend Dry::Initializer
 
-    include Persistence::Repos
-
     param :message
-    param :stream
-    param :state
-    param :user_id
+    param :client
+    param :app
 
     def call
       with_halt { handle(message) }
@@ -28,20 +25,16 @@ module Actions
     def build(name, input = {})
       Messages::Registry
         .call(name)
-        .new(state, stream, user_id)
+        .new(client, app)
         .call(input)
     end
 
     def reply(message)
-      stream.send_message message
+      client[:queue] << message
     end
 
     def post(message, to:)
-      to[:queue_in] << message
-    end
-
-    def auth!
-      throw :halt unless users.auth?(user_id)
+      to[:queue] << message
     end
 
     def with_halt(&block)

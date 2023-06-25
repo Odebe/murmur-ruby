@@ -2,9 +2,9 @@
 
 module Persistence
   module Commands
-    module Users
+    module Clients
       class Create < ROM::Memory::Commands::Create
-        relation :users
+        relation :clients
         register_as :create
       end
     end

@@ -8,9 +8,17 @@ gem 'byebug'
 
 gem 'concurrent-ruby'
 gem 'zeitwerk'
-gem 'rom'
-gem 'statesman', '~> 10.0.0'
+
+gem 'rom', '~> 5.3'
+gem 'rom-yaml'
+
+# gem 'statesman', '~> 10.0.0'
+
 gem 'dry-types'
+gem 'dry-initializer'
+
 gem 'async-io'
+gem 'async-debug'
+
 gem "rake"
 gem 'protobuf'

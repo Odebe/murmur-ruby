@@ -4,33 +4,31 @@ module Client
   class Handler
     extend Dry::Initializer
 
-    include Persistence::Repos
+    param :client
+    param :app
 
-    param :stream
-    param :state
-
-    option :waiter,     default: -> { Async::Waiter.new }
-    option :queue_in,   default: -> { Async::Queue.new }
+    option :barrier ,   default: -> { Async::Barrier.new }
+    option :finished,   default: -> { Async::Condition.new }
     option :dispatcher, default: -> { Actions::Dispatch }
-    option :user_id,    default: -> { nil }
 
     def start!
-      save_user
-      main_loop
+      Async::Task.current.annotate "serving session: #{client[:session_id]}"
+
+      barrier.async { from_client_loop }
+      barrier.async { to_client_loop }
+
+      finished.wait
+      barrier.stop
     end
 
     private
 
-    def main_loop
-      waiter.async { from_client_loop }
-      waiter.async { to_client_loop }
-      waiter.wait
-    end
-
     def from_client_loop
+      Async::Task.current.annotate 'from client loop'
+
       within_connection do
         loop do
-          message = stream.read_message
+          message = client[:stream].read_message
           break if message.nil?
 
           action = dispatcher.call(message)
@@ -39,19 +37,19 @@ module Client
             next
           end
 
-          action.new(message, stream, state, user_id).call
+          action.new(message, client, app).call
+
+          Async::Task.current.yield
         end
       end
     end
 
     def to_client_loop
-      within_connection do
-        queue_in.each { |message| stream.send_message(message) }
-      end
-    end
+      Async::Task.current.annotate 'to client loop'
 
-    def save_user
-      @user_id = users.create(queue_in: queue_in)[:id]
+      within_connection do
+        client[:queue].each { |message| client[:stream].send_message(message) }
+      end
     end
 
     def within_connection
@@ -59,7 +57,8 @@ module Client
     rescue EOFError
       # It's okay, client has disconnected.
     ensure
-      users.delete(user_id)
+      app.db.clients.delete(client[:session_id])
+      finished.signal(:disconnect)
     end
 
     def handle_not_defined(message)

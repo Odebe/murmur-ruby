@@ -2,7 +2,7 @@
 
 module Persistence
   module Entities
-    class User < ROM::Struct
+    class Room < ROM::Struct
     end
   end
 end

@@ -2,67 +2,55 @@
 
 module Persistence
   module Repositories
-    class Users < ROM::Repository[:users]
-      auto_struct false
+    class Users < Repository[:users]
+      struct_namespace Entities
 
       def all
         users.to_a
       end
 
-      def delete(user_id)
+      def delete(session_id)
         users
           .dataset
-          .delete_if { |user| user[:id] == user_id }
+          .delete_if { |user| user[:session_id] == session_id }
       end
 
-      def all_users_state
-        users.map { |user| build_state(user) }
-      end
-
-      def state_by(user_id)
-        build_state(find(user_id))
-      end
-
-      def except_by(user_id)
-        users.reject { |user| user[:id] == user_id }
-      end
-
-      def build_state(user)
-        Proto::Mumble::UserState.new(
-          session: user[:id],
-          name: user[:auth][:username],
-          channel_id: 0
-        )
-      end
-
-      def find(user_id)
+      def except_by(session_id)
         users
-          .restrict(id: user_id)
+          .reject { |user| user[:session_id] == session_id }
+      end
+
+      def find(session_id)
+        users
+          .restrict(session_id: session_id)
           .one
       end
 
       def create(queue_in:)
-        users
-          .command(:create)
-          .call(
-            id: IdRegistry.instance[:users],
-            queue_in: queue_in,
-            version: {},
-            auth: {}
-          )
-          .last
+        IdRegistry.instance[:session_id] do |session|
+          users
+            .command(:create)
+            .call(
+              id: -1,
+              session_id: session,
+              queue_in: queue_in,
+              version: {},
+              auth: {}
+            )
+            .last
+        end
       end
 
-      def set_version(user_id, version)
+      def set_version(session_id, version)
         users
-          .restrict(id: user_id)
+          .restrict(session_id: session_id)
           .command(:update)
           .call(version: version.to_hash)
       end
 
-      def set_auth(user_id, auth)
+      def set_auth(session_id, auth)
         users
-          .restrict(id: user_id)
+          .restrict(session_id: session_id)
           .command(:update)
           .call(auth: auth.to_hash)
       end

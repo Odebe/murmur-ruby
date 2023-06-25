@@ -4,12 +4,19 @@ require 'async/io/protocol/generic'
 
 module Proto
   class Stream < Async::IO::Protocol::Generic
+    # TODO: write in one call
     def send_message(msg)
-      body = msg.encode
+      msg.tap { |e| pp "> #{e.inspect}" }
 
-      write_type msg.class
-      write_length body
-      write body
+      body = msg.encode
+      raw_msg =
+        [
+          [Dicts::CLASS_TO_TYPE[msg.class]].pack('n'),
+          [body.size].pack('N'),
+          body
+        ].join('')
+
+      write raw_msg
     end
 
     def read_message
@@ -17,7 +24,7 @@ module Proto
       len  = read_length
       body = read_body(len)
 
-      Dicts::TYPE_TO_CLASS[type].decode(body)
+      Dicts::TYPE_TO_CLASS[type].decode(body).tap { |e| pp "<< #{e.inspect}" }
     end
 
     private

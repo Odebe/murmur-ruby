@@ -2,7 +2,7 @@
 
 module Actions
   module Incoming
-    class Ping < Dispatch[::Proto::Mumble::Ping]
+    class UserState < Dispatch[::Proto::Mumble::UserState]
       def handle(message)
         reply message
       end

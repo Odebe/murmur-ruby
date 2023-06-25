@@ -2,9 +2,9 @@
 
 module Persistence
   module Commands
-    module Users
+    module Clients
       class Delete < ROM::Memory::Commands::Delete
-        relation :users
+        relation :clients
         register_as :delete
       end
     end
