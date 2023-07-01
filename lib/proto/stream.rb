@@ -4,6 +4,11 @@ require 'async/io/protocol/generic'
 
 module Proto
   class Stream < Async::IO::Protocol::Generic
+
+    def closed?
+      @stream.closed?
+    end
+
     # TODO: write in one call
     def send_message(msg)
       msg.tap { |e| pp "> #{e.inspect}" }

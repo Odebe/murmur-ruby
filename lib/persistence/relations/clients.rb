@@ -5,9 +5,13 @@ module Persistence
     class Clients < ROM::Relation[:memory]
       gateway :memory
 
+      Statuses = Types::Symbol.default(:initialized).enum(:initialized, :authorized)
+
       schema(:clients) do
         attribute :session_id, Types::Integer
         primary_key :session_id
+
+        attribute :status, Statuses
 
         attribute :queue, Types.Instance(Async::Queue)
         attribute :stream, Types.Instance(Proto::Stream)

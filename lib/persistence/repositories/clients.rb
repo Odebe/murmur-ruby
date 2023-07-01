@@ -4,11 +4,22 @@
 module Persistence
   module Repositories
     class Clients < Repository[:clients]
-      # struct_namespace Entities
       auto_struct false
+
+      def count
+        all.count
+      end
 
       def all
         clients.to_a
+      end
+
+      def authorized
+        clients.restrict(state: :authorized)
+      end
+
+      def by_name(name)
+        clients.restrict(username: name).to_a.last
       end
 
       def find(session_id)
@@ -20,7 +31,9 @@ module Persistence
           .command(:create)
           .call(
             session_id: id_pool.obtain,
+            state: :initialized,
             user_id: nil,
+            room_id: 0,
             username: nil,
             password: nil,
             queue: queue,
@@ -32,6 +45,13 @@ module Persistence
             client_type: nil
           )
           .last
+      end
+
+      def update(session_id, **args)
+        clients
+          .restrict(session_id: session_id)
+          .command(:update)
+          .call(args)
       end
 
       def set_version(session_id, version)
@@ -52,6 +72,7 @@ module Persistence
         clients
           .dataset
           .delete_if { |user| user[:session_id] == session_id }
+          .then { |deleted| id_pool.release(session_id) if deleted }
       end
     end
   end

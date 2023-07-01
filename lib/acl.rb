@@ -56,7 +56,7 @@ class Acl
   # end
 
   # TODO: cache and calculation
-  def self.granted_permissions(user, _channel)
+  def self.granted_permissions(client, _channel)
     client[:user_id].nil? ? Permissions::Default : Permissions::All
   end
 end

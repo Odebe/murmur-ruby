@@ -10,6 +10,7 @@ module Persistence
     def setup!
       init_rom
       init_pools
+      init_data
     end
 
     def clients
@@ -41,6 +42,11 @@ module Persistence
         users: IdPool.new,
         rooms: IdPool.new,
       }
+    end
+
+    def init_data
+      users.all.each { |user| @pools[:users].reserve(user[:id]) }
+      rooms.all.each { |room| @pools[:rooms].reserve(room[:id]) }
     end
   end
 end

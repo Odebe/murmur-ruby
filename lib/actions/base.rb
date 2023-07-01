@@ -4,6 +4,7 @@ module Actions
   class Base
     extend Dry::Initializer
 
+    param :handler
     param :message
     param :client
     param :app
@@ -27,6 +28,10 @@ module Actions
         .call(name)
         .new(client, app)
         .call(input)
+    end
+
+    def disconnect!(reason)
+      handler.finished.signal(reason)
     end
 
     def reply(message)

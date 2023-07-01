@@ -1,4 +1,8 @@
-users: []
+users:
+  - id: 0
+    username: admin
+    password: example
+
 rooms:
   - id: 0
     name: root
@@ -6,4 +10,3 @@ rooms:
   - id: 1
     name: test1
     parent_id: 0
-

@@ -2,9 +2,9 @@
 
 module Messages
   module Factory
-    class AllClients < Registry[:all_clients]
+    class AuthorizedClients < Registry[:authorized_clients]
       def call(_input)
-        app.db.clients.all.map do |client|
+        app.db.clients.authorized.map do |client|
           Proto::Mumble::UserState.new(
             id:         client[:user_id],
             session:    client[:session_id],

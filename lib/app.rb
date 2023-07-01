@@ -45,7 +45,8 @@ class App
         message_length: 500,
         image_message_length: 0,
         max_users: 15,
-        recording_allowed: true
+        recording_allowed: true,
+        max_username_length: 20
       }
     end
   end

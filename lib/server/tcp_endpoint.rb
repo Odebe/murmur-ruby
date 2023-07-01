@@ -31,6 +31,7 @@ module Server
         client = app.db.clients.create(stream, queue)
 
         Client::Handler.new(client, app).start!
+        socket.close
       end
     end
   end

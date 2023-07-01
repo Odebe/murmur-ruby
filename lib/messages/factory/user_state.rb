@@ -8,7 +8,7 @@ module Messages
           id:         input[:client][:user_id],
           session:    input[:client][:session_id],
           name:       input[:client][:username],
-          channel_id: 0
+          channel_id: input[:client][:room_id]
         )
       end
     end

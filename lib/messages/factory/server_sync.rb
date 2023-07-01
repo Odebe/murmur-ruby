@@ -3,10 +3,10 @@
 module Messages
   module Factory
     class ServerSync < Registry[:server_sync]
-      def call(input)
+      def call(_input)
         Proto::Mumble::ServerSync.new(
-          session: input[:session_id],
-          permissions: Acl.granted_permissions(input[:user], nil)
+          session: client[:session_id],
+          permissions: Acl.granted_permissions(client, nil)
         )
       end
     end
