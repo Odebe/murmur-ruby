@@ -25,6 +25,10 @@ module Persistence
       @rooms ||= Repositories::Rooms.new(@rom, id_pool: @pools[:rooms])
     end
 
+    def codec
+      @codec ||= Repositories::Codec.new
+    end
+
     private
 
     def init_rom

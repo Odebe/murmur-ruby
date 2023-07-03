@@ -10,6 +10,25 @@ module Persistence
         all.count
       end
 
+      def init_crypt(session_id)
+        clients
+          .restrict(session_id: session_id)
+          .command(:update)
+          .call(crypt_key: Cipher::Key.new)
+      end
+
+      def except(session_id)
+        all.reject { |c| c[:session_id] == session_id }
+      end
+
+      def most_popular_codec
+        codec_popularity.max_by { |_k, v| v }&.first
+      end
+
+      def codec_popularity
+        clients.flat_map { |c| c[:celt_versions] }.tally
+      end
+
       def all
         clients.to_a
       end

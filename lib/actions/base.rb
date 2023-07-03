@@ -23,6 +23,10 @@ module Actions
       raise 'abstract method'
     end
 
+    def db
+      app.db
+    end
+
     def build(name, input = {})
       Messages::Registry
         .call(name)

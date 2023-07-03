@@ -4,7 +4,6 @@ require 'async/io/protocol/generic'
 
 module Proto
   class Stream < Async::IO::Protocol::Generic
-
     def closed?
       @stream.closed?
     end
@@ -13,7 +12,13 @@ module Proto
     def send_message(msg)
       msg.tap { |e| pp "> #{e.inspect}" }
 
-      body = msg.encode
+      body =
+        if msg.is_a? ::Proto::Mumble::UDPTunnel
+          msg.packet
+        else
+          msg.encode
+        end
+
       raw_msg =
         [
           [Dicts::CLASS_TO_TYPE[msg.class]].pack('n'),
@@ -29,7 +34,13 @@ module Proto
       len  = read_length
       body = read_body(len)
 
-      Dicts::TYPE_TO_CLASS[type].decode(body).tap { |e| pp "<< #{e.inspect}" }
+      # avoiding UdpTunnel message parsing
+      # cuz message body is literally voice packet and not protobuf message
+      if type == 1
+        Mumble::UDPTunnel.new(packet: body)
+      else
+        Dicts::TYPE_TO_CLASS[type].decode(body)
+      end.tap { |e| pp "<< #{e.inspect}" }
     end
 
     private
@@ -55,7 +66,7 @@ module Proto
     end
 
     def write(body)
-      @stream.write(body)
+     @stream.write(body)
     end
 
     def read(size)

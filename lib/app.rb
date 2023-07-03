@@ -39,7 +39,7 @@ class App
 
     def config
       {
-        max_bandwidth: 72_000,
+        max_bandwidth: 48_000 / 8,
         welcome_text: 'Hello world!',
         allow_html: false,
         message_length: 500,

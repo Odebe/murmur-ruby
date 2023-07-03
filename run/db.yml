@@ -5,8 +5,10 @@ users:
 
 rooms:
   - id: 0
-    name: root
+    name: Root
     parent_id: null
+    position: 0
   - id: 1
     name: test1
     parent_id: 0
+    position: 1

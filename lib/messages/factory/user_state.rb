@@ -7,6 +7,7 @@ module Messages
         Proto::Mumble::UserState.new(
           id:         input[:client][:user_id],
           session:    input[:client][:session_id],
+          actor:      input[:client][:session_id],
           name:       input[:client][:username],
           channel_id: input[:client][:room_id]
         )

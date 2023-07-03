@@ -9,6 +9,7 @@ module Messages
             channel_id: room[:id],
             parent: room[:parent_id],
             name: room[:name],
+            position: room[:position]
           )
         end
       end

@@ -11,6 +11,8 @@ module Persistence
 
         attribute :parent_id, Types::Integer.optional
         attribute :name, Types::String
+
+        attribute :position, Types::Integer
       end
     end
   end

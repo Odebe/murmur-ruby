@@ -15,6 +15,7 @@ module Persistence
 
         attribute :queue, Types.Instance(Async::Queue)
         attribute :stream, Types.Instance(Proto::Stream)
+        attribute :crypt_key, Types.Instance(Cipher::Key).optional
 
         attribute :user_id,  Types::Integer.optional
         attribute :username, Types::String.optional
