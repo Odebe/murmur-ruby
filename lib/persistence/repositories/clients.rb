@@ -1,5 +1,6 @@
-
 # frozen_string_literal: true
+
+require 'byebug'
 
 module Persistence
   module Repositories
@@ -34,7 +35,11 @@ module Persistence
       end
 
       def authorized
-        clients.restrict(state: :authorized)
+        clients.restrict(status: :authorized)
+      end
+
+      def authorized?(session_id)
+        authorized.restrict(session_id: session_id).any?
       end
 
       def by_name(name)
@@ -42,7 +47,11 @@ module Persistence
       end
 
       def find(session_id)
-        clients.restrict(session_id: session_id)
+        clients.restrict(session_id: session_id).to_a.last
+      end
+
+      def in_room(room_id, except: [])
+        clients.restrict(room_id: room_id).reject { |c| except.include?(c[:session_id]) }
       end
 
       def create(stream, queue)
@@ -50,7 +59,7 @@ module Persistence
           .command(:create)
           .call(
             session_id: id_pool.obtain,
-            state: :initialized,
+            status: :initialized,
             user_id: nil,
             room_id: 0,
             username: nil,
@@ -84,7 +93,7 @@ module Persistence
         clients
           .restrict(session_id: session_id)
           .command(:update)
-          .call(auth.to_hash)
+          .call(auth.to_hash.merge(status: :authorized))
       end
 
       def delete(session_id)

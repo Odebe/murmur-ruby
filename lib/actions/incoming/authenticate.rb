@@ -7,26 +7,22 @@ module Actions
         if db.clients.count >= app.config[:max_users]
           reply build(:server_reject, reason: :ServerFull)
           disconnect!(:auth_error)
-          throw(:halt)
         end
 
         if db.clients.by_name(message.username)
           reply build(:server_reject, reason: :UsernameInUse)
           disconnect!(:auth_error)
-          throw(:halt)
         end
 
         registered_user = db.users.by_name(message.username)
         if registered_user && registered_user[:password] != message.password
           reply build(:server_reject, reason: :WrongServerPW)
           disconnect!(:auth_error)
-          throw(:halt)
         end
 
         if message.username.size == 0 || message.username.size > app.config[:max_username_length]
           reply build(:server_reject, reason: :InvalidUsername)
           disconnect!(:auth_error)
-          throw(:halt)
         end
 
         db.clients.set_auth(client[:session_id], message)
@@ -50,6 +46,8 @@ module Actions
 
         reply build(:user_state, client: client)
         reply build(:server_sync, client: client)
+
+        db.clients.update(client[:session_id], room_id: app.config[:default_room])
 
         client_state = build(:user_state, client: client)
         db.clients.authorized.each { |client| post client_state, to: client }

@@ -3,6 +3,8 @@
 module Client
   # TODO: refactor to generic UDP packets parser
   class VoicePacket
+    attr_reader :target
+
     def initialize(data)
       @io_in      = AudioStream.new(data.bytes)
       @buffer_out = AudioStream.new

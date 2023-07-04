@@ -9,6 +9,6 @@ rooms:
     parent_id: null
     position: 0
   - id: 1
-    name: test1
+    name: guest_room
     parent_id: 0
     position: 1

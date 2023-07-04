@@ -4,6 +4,8 @@ module Actions
   module Incoming
     class UserState < Dispatch[::Proto::Mumble::UserState]
       def handle(message)
+        authorize!
+
         reply message
       end
     end

@@ -34,8 +34,17 @@ module Actions
         .call(input)
     end
 
+    def authorize!
+      halt! unless db.clients.authorized?(client[:session_id])
+    end
+
     def disconnect!(reason)
       handler.finished.signal(reason)
+      halt!
+    end
+
+    def halt!
+      throw(:halt)
     end
 
     def reply(message)
