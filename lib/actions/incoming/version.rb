@@ -7,6 +7,7 @@ module Actions
         app.db.clients.set_version(client[:session_id], message)
 
         # TODO: send server version
+        reply message
       end
     end
   end

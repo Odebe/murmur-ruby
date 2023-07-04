@@ -7,7 +7,7 @@ module Actions
         authorize!
 
         reply ::Proto::Mumble::PermissionQuery.new(
-                channel_id: 0,
+                channel_id: message.channel_id,
                 permissions: Acl.granted_permissions(client, nil)
               )
       end

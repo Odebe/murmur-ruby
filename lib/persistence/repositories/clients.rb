@@ -50,8 +50,12 @@ module Persistence
         clients.restrict(session_id: session_id).to_a.last
       end
 
-      def in_room(room_id, except: [])
-        clients.restrict(room_id: room_id).reject { |c| except.include?(c[:session_id]) }
+      def by_sessions(session_ids)
+        clients.restrict(session_id: session_ids).to_a
+      end
+
+      def in_rooms(room_ids, except: [])
+        clients.restrict(room_id: room_ids).reject { |c| except.include?(c[:session_id]) }
       end
 
       def create(stream, queue)

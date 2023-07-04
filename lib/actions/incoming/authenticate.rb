@@ -42,17 +42,21 @@ module Actions
         reply(codec || build(:codec_version))
 
         build(:all_channels).each { |state| reply state }
-        build(:authorized_clients).each { |state| reply state }
 
-        reply build(:user_state, client: client)
-        reply build(:server_sync, client: client)
+        client_state = build(:user_state, client: client)
+        db.clients.authorized
+          .each { |client| post client_state, to: client }
 
         db.clients.update(client[:session_id], room_id: app.config[:default_room])
 
-        client_state = build(:user_state, client: client)
-        db.clients.authorized.each { |client| post client_state, to: client }
+        db.clients.authorized
+          .reject { |c| c[:session_id] == client[:session_id] }
+          .each { |another_client| reply build(:user_state, client: another_client) }
 
-        reply build(:server_config)
+        reply build(:user_state, client: client)
+
+        reply build(:server_sync, client: client)
+        # reply build(:server_config)
       end
     end
   end

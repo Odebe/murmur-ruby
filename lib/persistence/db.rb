@@ -51,6 +51,11 @@ module Persistence
     def init_data
       users.all.each { |user| @pools[:users].reserve(user[:id]) }
       rooms.all.each { |room| @pools[:rooms].reserve(room[:id]) }
+
+      # Official client expects session number greater than zero
+      # If session_id is zero it thinks there is no session
+      # See 'Global::get().uiSession == 0' in mumble sources
+      @pools[:clients].reserve(0)
     end
   end
 end

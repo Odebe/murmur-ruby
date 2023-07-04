@@ -16,7 +16,7 @@ module Actions
           reply msg
         else
           # Ignoring voice targets, send packet to current channel
-          db.clients.in_room(client[:room_id], except: [client[:session_id]]).each do |room_client|
+          db.clients.in_rooms([client[:room_id]], except: [client[:session_id]]).each do |room_client|
             post msg, to: room_client
           end
         end
