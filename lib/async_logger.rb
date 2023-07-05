@@ -29,7 +29,7 @@ class AsyncLogger
     debug
   ].each do |level|
     define_method level do |msg|
-      Async(transient: true) { queue << [level, msg] }
+      queue << [level, msg]
     end
   end
 end

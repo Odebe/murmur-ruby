@@ -54,7 +54,7 @@ module Actions
 
       def check_channel_change
         return if message.channel_id.nil?
-        return if message.channel_id != client[:channel_id]
+        return unless message.channel_id != client[:channel_id]
         return unless db.rooms.exists?(message.channel_id)
 
         db.clients.update(client[:session_id], room_id: message.channel_id)
