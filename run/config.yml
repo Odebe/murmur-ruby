@@ -1,5 +1,5 @@
 # connection
-host: '127.0.0.1'
+host: 0.0.0.0
 port: 64_738
 ssl_cert: 'server.cert'
 ssl_key: 'server.key'
@@ -33,8 +33,8 @@ rooms:
   - id: 1
     name: guest_room
     parent_id: 0
-    position: 0
+    position: 1
   - id: 2
     name: forum
     parent_id: 0
-    position: 1
+    position: 0

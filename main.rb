@@ -9,7 +9,9 @@ require 'dry-initializer'
 require 'rom'
 require 'rom-yaml'
 
+require 'async'
 require 'async/io'
+
 require 'async/queue'
 require 'async/barrier'
 require 'async/condition'
