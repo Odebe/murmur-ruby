@@ -3,9 +3,9 @@ require_relative './id_pool'
 
 module Persistence
   class Db
-    def initialize(app)
-      @app = app
-    end
+    extend Dry::Initializer
+
+    param :db_path
 
     def setup!
       init_rom
@@ -34,9 +34,9 @@ module Persistence
     def init_rom
       @rom = ROM.container(
         memory: [:memory, 'memory://ruby_murmur'],
-        file:   [:yaml,    @app.settings[:db][:path]]
+        file:   [:yaml,    db_path]
       ) do |config|
-        config.auto_registration(@app.persistence_path)
+        config.auto_registration(__dir__)
       end
     end
 

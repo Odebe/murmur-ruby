@@ -64,9 +64,11 @@ module Persistence
           .call(
             session_id: id_pool.obtain,
             status: :initialized,
-            user_id: nil,
+            user_id: -1,
             room_id: 0,
             username: nil,
+            self_mute: false,
+            self_deaf: false,
             password: nil,
             queue: queue,
             stream: stream,

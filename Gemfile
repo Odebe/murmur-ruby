@@ -16,6 +16,7 @@ gem 'rom-yaml'
 
 gem 'dry-types'
 gem 'dry-initializer'
+gem 'dry-configurable'
 
 gem 'async-io'
 gem 'async-debug'

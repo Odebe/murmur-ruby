@@ -10,8 +10,6 @@ module Proto
 
     # TODO: write in one call
     def send_message(msg)
-      msg.tap { |e| pp "> #{e.inspect}" }
-
       body =
         if msg.is_a? ::Proto::Mumble::UDPTunnel
           msg.packet
@@ -40,7 +38,7 @@ module Proto
         Mumble::UDPTunnel.new(packet: body)
       else
         Dicts::TYPE_TO_CLASS[type].decode(body)
-      end.tap { |e| pp "<< #{e.inspect}" }
+      end
     end
 
     private

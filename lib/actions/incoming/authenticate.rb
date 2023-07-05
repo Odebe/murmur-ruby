@@ -56,7 +56,7 @@ module Actions
         reply build(:user_state, client: client)
 
         reply build(:server_sync, client: client)
-        # reply build(:server_config)
+        reply build(:server_config)
       end
     end
   end

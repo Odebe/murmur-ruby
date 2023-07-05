@@ -7,9 +7,25 @@ module Client
     param :client
     param :app
 
-    option :barrier,      default: -> { Async::Barrier.new }
-    option :finished,     default: -> { Async::Condition.new }
-    option :dispatcher,   default: -> { Actions::Dispatch }
+    option :barrier,    default: -> { Async::Barrier.new }
+    option :finished,   default: -> { Async::Condition.new }
+    option :dispatcher, default: -> { Actions::Dispatch }
+
+    def setup!
+      return unless app.config.debug
+
+      define_singleton_method(:read_client_message) do
+        client[:stream].read_message.tap do |message|
+          app.logger.debug("<< #{message.inspect}")
+        end
+      end
+
+      define_singleton_method(:read_server_message) do
+        client[:queue].dequeue.tap do |message|
+          app.logger.debug(">> #{message.inspect}")
+        end
+      end
+    end
 
     def start!
       barrier.async { from_client_loop }
@@ -33,7 +49,7 @@ module Client
 
       within_connection do
         stream_loop do
-          message = client[:stream].read_message
+          message = read_client_message
           action = dispatcher.call(message)
 
           unless action
@@ -52,9 +68,17 @@ module Client
 
       within_connection do
         stream_loop do
-          client[:stream].send_message(client[:queue].dequeue)
+          client[:stream].send_message(read_server_message)
         end
       end
+    end
+
+    def read_client_message
+      client[:stream].read_message
+    end
+
+    def read_server_message
+      client[:queue].dequeue
     end
 
     def stream_loop

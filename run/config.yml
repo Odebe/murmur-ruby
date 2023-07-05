@@ -1,0 +1,40 @@
+# connection
+host: '127.0.0.1'
+port: 64_738
+ssl_cert: 'server.cert'
+ssl_key: 'server.key'
+
+# server settings
+max_bandwidth: 192_000
+welcome_text: 'Hello world!'
+allow_html: false
+message_length: 500
+image_message_length: 0
+max_users: 15
+recording_allowed: true
+max_username_length: 20
+default_room: 1
+
+# debug
+debug: true
+debug_web: false
+
+# database section
+users:
+  - id: 0
+    username: admin
+    password: example
+
+rooms:
+  - id: 0
+    name: Root
+    parent_id: null
+    position: 0
+  - id: 1
+    name: guest_room
+    parent_id: 0
+    position: 0
+  - id: 2
+    name: forum
+    parent_id: 0
+    position: 1

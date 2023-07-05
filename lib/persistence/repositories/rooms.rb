@@ -10,6 +10,10 @@ module Persistence
         rooms.to_a
       end
 
+      def exists?(id)
+        rooms.restrict(id: id).any?
+      end
+
       def create_root
         create_room(name: 'Root')
       end

@@ -160,7 +160,6 @@ GEM
     samovar (2.2.0)
       console (~> 1.0)
       mapping (~> 1.0)
-    statesman (10.0.0)
     thor (1.2.1)
     thread-local (1.1.0)
     thread_safe (0.3.6)
@@ -197,13 +196,13 @@ DEPENDENCIES
   async-io
   byebug
   concurrent-ruby
+  dry-configurable
   dry-initializer
   dry-types
   protobuf
   rake
   rom (~> 5.3)
   rom-yaml
-  statesman (~> 10.0.0)
   zeitwerk
 
 BUNDLED WITH

@@ -14,19 +14,16 @@ require 'async/queue'
 require 'async/barrier'
 require 'async/condition'
 
-if ENV['DEBUG']
-  require 'async/debug'
-  require 'byebug'
-end
+require_relative 'lib/configurator'
 
-require_relative 'lib/app'
+app          = Configurator.call
+tcp_endpoint = Server::TcpEndpoint.new(app)
 
-app = App.new
-app.setup!
+require 'async/debug' if app.config.debug_web
 
-server = Server::TcpEndpoint.new(app)
+Sync do
+  Async::Debug.serve if app.config.debug_web
 
-Async do
-  Async::Debug.serve if ENV['DEBUG']
-  server.start!
+  app.start!
+  tcp_endpoint.start!
 end

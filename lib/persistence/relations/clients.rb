@@ -13,6 +13,9 @@ module Persistence
 
         attribute :status, Statuses
 
+        attribute :self_mute, Types::Bool
+        attribute :self_deaf, Types::Bool
+
         attribute :room_id, Types::Integer
 
         attribute :queue, Types.Instance(Async::Queue)
