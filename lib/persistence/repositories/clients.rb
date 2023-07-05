@@ -55,7 +55,15 @@ module Persistence
       end
 
       def in_rooms(room_ids, except: [])
-        clients.restrict(room_id: room_ids).reject { |c| except.include?(c[:session_id]) }
+        clients
+          .restrict(room_id: room_ids)
+          .reject { |c| except.include?(c[:session_id]) }
+      end
+
+      def listeners(room_id, except: [])
+        clients
+          .restrict(room_id: room_id, self_deaf: false)
+          .reject { |c| except.include?(c[:session_id]) }
       end
 
       def create(stream, queue)

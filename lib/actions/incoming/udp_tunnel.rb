@@ -5,6 +5,7 @@ module Actions
     class UdpTunnel < Dispatch[::Proto::Mumble::UDPTunnel]
       def handle(message)
         authorize!
+        halt! if client[:self_mute]
 
         packet = ::Client::VoicePacket.new(message.packet)
         msg    = ::Proto::Mumble::UDPTunnel.new(packet: packet.to_outgoing(session_id: client[:session_id]))
@@ -16,8 +17,8 @@ module Actions
           reply msg
         else
           # Ignoring voice targets, send packet to current channel
-          db.clients.in_rooms([client[:room_id]], except: [client[:session_id]]).each do |room_client|
-            post msg, to: room_client
+          db.clients.listeners(client[:room_id], except: [client[:session_id]]).each do |listener|
+            post msg, to: listener
           end
         end
       end
