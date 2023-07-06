@@ -2,12 +2,8 @@
 
 require 'async/io/protocol/generic'
 
-module Proto
-  class Stream < Async::IO::Protocol::Generic
-    def closed?
-      @stream.closed?
-    end
-
+module Client
+  class ProtobufStream < Async::IO::Protocol::Generic
     # TODO: write in one call
     def send_message(msg)
       body =
@@ -19,7 +15,7 @@ module Proto
 
       raw_msg =
         [
-          [Dicts::CLASS_TO_TYPE[msg.class]].pack('n'),
+          [class_to_type(msg.class)].pack('n'),
           [body.size].pack('N'),
           body
         ].join('')
@@ -35,9 +31,9 @@ module Proto
       # avoiding UdpTunnel message parsing
       # cuz message body is literally voice packet and not protobuf message
       if type == 1
-        Mumble::UDPTunnel.new(packet: body)
+       ::Proto::Mumble::UDPTunnel.new(packet: body)
       else
-        Dicts::TYPE_TO_CLASS[type].decode(body)
+        ::Proto::Dicts::TYPE_TO_CLASS[type].decode(body)
       end
     end
 
@@ -56,7 +52,7 @@ module Proto
     end
 
     def write_type(klass)
-      write [Dicts::CLASS_TO_TYPE[klass]].pack('n')
+      write [class_to_type(klass)].pack('n')
     end
 
     def write_length(body)
@@ -64,11 +60,15 @@ module Proto
     end
 
     def write(body)
-     @stream.write(body)
+      @stream.write(body)
     end
 
     def read(size)
       @stream.read(size) or @stream.eof!
+    end
+
+    def class_to_type(klass)
+      ::Proto::Dicts::CLASS_TO_TYPE[klass]
     end
   end
 end

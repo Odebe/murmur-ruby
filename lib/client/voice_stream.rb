@@ -3,20 +3,11 @@
 module Client
   # https://github.com/mumble-voip/mumble/blob/master/src/PacketDataStream.h
   # https://github.com/umurmur/umurmur/blob/master/src/pds.c
-  class AudioStream
-    attr_reader :bytes
-
-    # TODO: make it work with io
-    def initialize(bytes = [])
-      @bytes = bytes
-    end
-
+  class VoiceStream < Async::IO::Protocol::Generic
     def write(value)
-      @bytes << value
-    end
+      return @stream.write(value) if value.is_a? String
 
-    def append(values)
-      @bytes.push(*values)
+      @stream.write [value].flatten.pack('C*')
     end
 
     def write_varint(value)
@@ -68,13 +59,11 @@ module Client
     end
 
     def read(n)
-      raise IO::EOFError if @bytes.none?
-
-      @bytes.shift(n)
+      n.times.map { read_byte }
     end
 
     def read_byte
-      read(1)[0]
+      @stream.getbyte
     end
 
     def read_varint

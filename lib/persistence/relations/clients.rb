@@ -19,7 +19,7 @@ module Persistence
         attribute :room_id, Types::Integer
 
         attribute :queue, Types.Instance(Async::Queue)
-        attribute :stream, Types.Instance(Proto::Stream)
+        attribute :stream, Types.Instance(::Client::ProtobufStream)
         attribute :crypt_key, Types.Instance(Cipher::Key).optional
 
         attribute :user_id,  Types::Integer.optional

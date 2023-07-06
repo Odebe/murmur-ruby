@@ -28,7 +28,7 @@ module Server
 
       endpoint.accept do |socket|
         socket = Async::IO::Stream.new(socket)
-        stream = Proto::Stream.new(socket)
+        stream = Client::ProtobufStream.new(socket)
         queue  = Async::Queue.new
         client = app.db.clients.create(stream, queue)
 
