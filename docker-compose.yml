@@ -5,6 +5,9 @@ services:
     build: .
     command: bundle exec ruby main.rb
     ports:
-      - 64738:64738
+      - "64738:64738"
     volumes:
-      - $PWD:/app
+      - $PWD/run/config.yml:/app/run/config.yml
+      # need to be generated, run "make generate-cert"
+      - $PWD/run/server.cert:/app/run/server.cert
+      - $PWD/run/server.key:/app/run/server.key

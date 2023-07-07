@@ -1,8 +1,8 @@
 # connection
 host: 0.0.0.0
 port: 64_738
-ssl_cert: 'server.cert'
-ssl_key: 'server.key'
+ssl_cert: 'run/server.cert'
+ssl_key: 'run/server.key'
 
 # server settings
 max_bandwidth: 192_000
@@ -16,7 +16,7 @@ max_username_length: 20
 default_room: 1
 
 # debug
-debug: true
+debug: false
 debug_web: false
 
 # database section
