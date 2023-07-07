@@ -92,10 +92,9 @@ module Client
       yield
     rescue OpenSSL::SSL::SSLError
       # It's okay, client has disconnected.
-      finished.signal(:disconnect)
-    rescue StandardError => error
-      raise error
-    else
+    rescue StandardError => e
+      app.logger.error(e)
+    ensure
       finished.signal(:disconnect)
     end
 
