@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require 'byebug'
-
 module Client
   class VoicePacket
     attr_reader :target
