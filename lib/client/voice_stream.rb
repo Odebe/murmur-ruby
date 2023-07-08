@@ -101,7 +101,7 @@ module Client
     # read_byte << 56 | read_byte << 48 | read_byte << 40 | ...
     def read_varint_bytes(count)
       result = 0
-      (count - 1).down(to: 0).each do |i|
+      (count - 1).downto(0).each do |i|
         result |= read_byte << (i * 8)
       end
       result

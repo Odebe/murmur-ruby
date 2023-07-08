@@ -12,6 +12,7 @@ module Client
     option :dispatcher, default: -> { Actions::Dispatch }
 
     def setup!
+      # avoiding app.config.debug check in runtime
       return unless app.config.debug
 
       define_singleton_method(:read_client_message) do
@@ -41,6 +42,7 @@ module Client
     # TODO: graceful shutdown
     def shutdown
       barrier.stop
+
       build_action(::Actions::Disconnect).call
     end
 
@@ -52,7 +54,7 @@ module Client
         stream_loop do
           message = read_client_message
           action = dispatcher.call(message)
-          action ? build_action(message).call : handle_not_defined(message)
+          action ? build_action(action, message).call : handle_not_defined(message)
         end
       end
     end
@@ -68,7 +70,7 @@ module Client
       end
     end
 
-    def build_action(message)
+    def build_action(action, message = nil)
       action.new(self, message, client, app)
     end
 

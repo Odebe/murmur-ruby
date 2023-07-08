@@ -6,16 +6,10 @@ module Client
   class ProtobufStream < Async::IO::Protocol::Generic
     # TODO: write in one call
     def send_message(msg)
-      body =
-        if msg.is_a? ::Proto::Mumble::UDPTunnel
-          msg.packet
-        else
-          msg.encode
-        end
-
+      body = msg.is_a?(::Proto::Mumble::UDPTunnel) ? msg.packet : msg.encode
       raw_msg =
         [
-          [class_to_type(msg.class)].pack('n'),
+          [::Proto::Dicts.find_type(msg.class)].pack('n'),
           [body.size].pack('N'),
           body
         ].join('')
@@ -33,7 +27,7 @@ module Client
       if type == 1
        ::Proto::Mumble::UDPTunnel.new(packet: body)
       else
-        ::Proto::Dicts::TYPE_TO_CLASS[type].decode(body)
+        ::Proto::Dicts.find_class(type).decode(body)
       end
     end
 
@@ -51,24 +45,12 @@ module Client
       read(len)
     end
 
-    def write_type(klass)
-      write [class_to_type(klass)].pack('n')
-    end
-
-    def write_length(body)
-      write [body.size].pack('N')
-    end
-
     def write(body)
       @stream.write(body)
     end
 
     def read(size)
       @stream.read(size) or @stream.eof!
-    end
-
-    def class_to_type(klass)
-      ::Proto::Dicts::CLASS_TO_TYPE[klass]
     end
   end
 end
