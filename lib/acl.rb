@@ -3,15 +3,6 @@
 # BIG TODO
 # Mumble sources: src/ACL.cpp
 class Acl
-  # extend Dry::Core::ClassAttributes
-  # extend Dry::Initializer
-
-  # module Mixin
-  #   def permission?(...)
-  #     ACL.has_permission(...)
-  #   end
-  # end
-
   module Permissions
     None            = 0x0
     Write           = 0x1
@@ -36,27 +27,27 @@ class Acl
 
     Cached = 0x8000000
 
-    All = Write + Traverse + Enter + Speak + MuteDeafen + Move + MakeChannel + LinkChannel + Whisper +
-      TextMessage + MakeTempChannel + Listen + Kick + Ban + Register + SelfRegister + ResetUserContent
+    ALL =
+      Write | Traverse | Enter | Speak | MuteDeafen | Move |
+      MakeChannel | LinkChannel | Whisper | TextMessage |
+      MakeTempChannel | Listen | Kick | Ban | Register |
+      SelfRegister | ResetUserContent |Cached
 
-    Default = Traverse | Enter | Speak | Whisper | TextMessage | Listen
+    DEFAULT =
+      Traverse | Enter | Speak | Whisper | TextMessage | Listen
+
+    NOT_IMPLEMENTED =
+      Move | MakeChannel | LinkChannel | Whisper |
+      MakeTempChannel | Kick | Ban | Register |
+      SelfRegister | ResetUserContent | Cached
+
+    module Implemented
+      ALL     = Permissions::ALL     & ~Permissions::NOT_IMPLEMENTED
+      DEFAULT = Permissions::DEFAULT & ~Permissions::NOT_IMPLEMENTED
+    end
   end
 
-  # TODO: cache
-  # defines :all_cache
-  # all_cache ::Concurrent::Hash.new
-
-  # TODO
-  # param :channel
-  # param :perm, default: -> { Permissions::Default }
-
-  # TODO
-  # def self.has_permission(user, chan, perm)
-  #   Permissions::None != (granted_permissions(user, chan) & perm)
-  # end
-
-  # TODO: cache and calculation
   def self.granted_permissions(client, _channel)
-    client[:user_id].nil? ? Permissions::Default : Permissions::All
+    client[:user_id].nil? ? Permissions::Implemented::DEFAULT : Permissions::Implemented::ALL
   end
 end
