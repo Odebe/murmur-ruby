@@ -32,6 +32,7 @@ module Client
       barrier.async { to_client_loop }
 
       finished.wait
+    ensure
       shutdown
     end
 
@@ -40,7 +41,7 @@ module Client
     # TODO: graceful shutdown
     def shutdown
       barrier.stop
-      app.db.clients.delete(client[:session_id])
+      build_action(::Actions::Disconnect).call
     end
 
     def from_client_loop
@@ -51,13 +52,7 @@ module Client
         stream_loop do
           message = read_client_message
           action = dispatcher.call(message)
-
-          unless action
-            handle_not_defined(message)
-            next
-          end
-
-          action.new(self, message, client, app).call
+          action ? build_action(message).call : handle_not_defined(message)
         end
       end
     end
@@ -71,6 +66,10 @@ module Client
           client[:stream].send_message(read_server_message)
         end
       end
+    end
+
+    def build_action(message)
+      action.new(self, message, client, app)
     end
 
     def read_client_message

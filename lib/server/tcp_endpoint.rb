@@ -35,8 +35,6 @@ module Server
         handler = Client::Handler.new(client, app)
         handler.setup!
         handler.start!
-
-        socket.close
       end
     end
   end
