@@ -42,6 +42,7 @@ GEM
     console (1.16.2)
       fiber-local
     date (3.3.3)
+    diff-lcs (1.5.0)
     dry-configurable (1.0.1)
       dry-core (~> 1.0, < 2)
       zeitwerk (~> 2.6)
@@ -133,7 +134,6 @@ GEM
       protocol-http (~> 0.2)
       protocol-http1 (~> 0.2)
     rack (3.0.8)
-    rake (13.0.6)
     rom (5.3.0)
       rom-changeset (~> 5.3, >= 5.3.0)
       rom-core (~> 5.3, >= 5.3.0)
@@ -157,6 +157,19 @@ GEM
       rom-core (~> 5.3, >= 5.3.0)
     rom-yaml (3.0.0)
       rom-core (~> 5.0)
+    rspec (3.12.0)
+      rspec-core (~> 3.12.0)
+      rspec-expectations (~> 3.12.0)
+      rspec-mocks (~> 3.12.0)
+    rspec-core (3.12.0)
+      rspec-support (~> 3.12.0)
+    rspec-expectations (3.12.2)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-mocks (3.12.3)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.12.0)
+    rspec-support (3.12.0)
     samovar (2.2.0)
       console (~> 1.0)
       mapping (~> 1.0)
@@ -200,9 +213,9 @@ DEPENDENCIES
   dry-initializer
   dry-types
   protobuf
-  rake
   rom (~> 5.3)
   rom-yaml
+  rspec
   zeitwerk
 
 BUNDLED WITH

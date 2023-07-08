@@ -4,22 +4,23 @@ source "https://rubygems.org"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
-gem 'byebug'
-
+gem 'async-io'
+gem 'protobuf'
 gem 'concurrent-ruby'
 gem 'zeitwerk'
 
 gem 'rom', '~> 5.3'
 gem 'rom-yaml'
 
-# gem 'statesman', '~> 10.0.0'
-
 gem 'dry-types'
 gem 'dry-initializer'
 gem 'dry-configurable'
 
-gem 'async-io'
-gem 'async-debug'
+group :development do
+  gem 'byebug'
+  gem 'async-debug'
+end
 
-gem "rake"
-gem 'protobuf'
+group :test do
+  gem 'rspec'
+end

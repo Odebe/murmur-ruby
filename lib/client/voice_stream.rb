@@ -34,7 +34,14 @@ module Client
         write((i >> 8) | 0x80)
         write(i & 0xFF)
       elsif i < 0x200000
+        # Need top three bits clear
         write((i >> 16) | 0xC0)
+        write((i >> 8) & 0xFF)
+        write(i & 0xFF)
+      elsif i < 0x10000000
+        # Need top four bits clear
+        write((i >> 24) | 0xE0)
+        write((i >> 16) & 0xFF)
         write((i >> 8) & 0xFF)
         write(i & 0xFF)
       elsif i < 0x100000000
@@ -90,7 +97,7 @@ module Client
       elsif (v & 0xF0) == 0xE0
         i = (v & 0x0F) << 24 | read_varint_bytes(3)
       elsif (v & 0xE0) == 0xC0
-        i = (v & 0x1F << 16) | read_varint_bytes(2)
+        i = (v & 0x1F) << 16 | read_varint_bytes(2)
       end
 
       i
