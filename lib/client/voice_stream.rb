@@ -13,7 +13,7 @@ module Client
     def write_varint(value)
       i = value
 
-      if (value & 0x8000000000000000) > 0 && ~value < 0x100000000
+      if (value & 0x8000000000000000).positive? && ~value < 0x100000000
         # Signed number.
         i = ~i
 
@@ -66,7 +66,7 @@ module Client
     end
 
     def read(n)
-      n.times.map { read_byte }
+      Array.new(n) { read_byte }
     end
 
     def read_byte
@@ -77,27 +77,28 @@ module Client
       i = 0
       v = read_byte
 
-      if (v & 0x80) == 0x00
+      if (v & 0x80).zero?
         i = v & 0x7F
       elsif (v & 0xC0) == 0x80
         i = ((v & 0x3F) << 8) | read_byte
       elsif (v & 0xF0) == 0xF0
-        case v & 0xFC
-        when 0xF0
-          i = read_varint_bytes(4)
-        when 0xF4
-          i = read_varint_bytes(8)
-        when 0xF8
-          i = ~read_varint
-        when 0xFC
-          i = ~(v & 0x03)
-        else
-          i = 0
-        end
+        i =
+          case v & 0xFC
+          when 0xF0
+            read_varint_bytes(4)
+          when 0xF4
+            read_varint_bytes(8)
+          when 0xF8
+            ~read_varint
+          when 0xFC
+            ~(v & 0x03)
+          else
+            0
+          end
       elsif (v & 0xF0) == 0xE0
-        i = (v & 0x0F) << 24 | read_varint_bytes(3)
+        i = ((v & 0x0F) << 24) | read_varint_bytes(3)
       elsif (v & 0xE0) == 0xC0
-        i = (v & 0x1F) << 16 | read_varint_bytes(2)
+        i = ((v & 0x1F) << 16) | read_varint_bytes(2)
       end
 
       i

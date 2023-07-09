@@ -29,11 +29,12 @@ module Persistence
         # // it as alpha and announce it. If another codec now got the
         # // majority set it as the opposite of the currently valid bPreferAlpha
         # // and announce it.
-        if version == 0x8000000b
-          @prefer_alpha = true
-        else
-          @prefer_alpha = !@prefer_alpha
-        end
+        @prefer_alpha =
+          if version == 0x8000000b
+            true
+          else
+            !@prefer_alpha
+          end
 
         if @prefer_alpha
           @codec_alpha = version

@@ -3,7 +3,7 @@
 module Actions
   module Incoming
     class UdpTunnel < Dispatch[::Proto::Mumble::UDPTunnel]
-      def handle(message)
+      def handle
         authorize!
         halt! if client[:self_mute]
 

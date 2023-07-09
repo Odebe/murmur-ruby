@@ -68,21 +68,21 @@ module Persistence
         clients
           .command(:create)
           .call(
-            session_id: id_pool.obtain,
-            status: :initialized,
-            user_id: -1,
-            room_id: 0,
-            username: nil,
-            self_mute: false,
-            self_deaf: false,
-            password: nil,
-            queue: queue,
-            stream: stream,
-            version: {},
-            tokens: [],
+            session_id:    id_pool.obtain,
+            status:        :initialized,
+            user_id:       -1,
+            room_id:       0,
+            username:      nil,
+            self_mute:     false,
+            self_deaf:     false,
+            password:      nil,
+            queue:         queue,
+            stream:        stream,
+            version:       {},
+            tokens:        [],
             celt_versions: [],
-            opus: nil,
-            client_type: nil
+            opus:          nil,
+            client_type:   nil
           )
           .last
       end

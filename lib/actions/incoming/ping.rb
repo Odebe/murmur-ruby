@@ -3,7 +3,7 @@
 module Actions
   module Incoming
     class Ping < Dispatch[::Proto::Mumble::Ping]
-      def handle(message)
+      def handle
         reply message
       end
     end

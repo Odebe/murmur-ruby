@@ -18,7 +18,7 @@ module Cipher
 
     def to_hash
       {
-        key: @raw_key,
+        key:          @raw_key,
         client_nonce: @encrypt_iv,
         server_nonce: @decrypt_iv
       }
@@ -29,7 +29,7 @@ module Cipher
     private
 
     def new_cipher
-      OpenSSL::Cipher::AES.new(128, :OCB)
+      OpenSSL::Cipher.new(MUMBLE_CRYPT_ALGORITHM)
     end
   end
 end

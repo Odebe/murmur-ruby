@@ -5,7 +5,7 @@ module Actions
     class UserState < Dispatch[::Proto::Mumble::UserState]
       attr_reader :announce, :target
 
-      def handle(_message)
+      def handle
         authorize!
 
         check_permission!
@@ -34,7 +34,7 @@ module Actions
       end
 
       def find_target!
-        if message.session == 0
+        if message.session.zero?
           @target = client
         else
           @target = db.clients.find(message.session)

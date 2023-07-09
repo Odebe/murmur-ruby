@@ -11,6 +11,7 @@ module Client
     option :finished,   default: -> { Async::Condition.new }
     option :dispatcher, default: -> { Actions::Dispatch }
 
+    # rubocop:disable Metrics/AbcSize
     def setup!
       # avoiding app.config.debug check in runtime
       return unless app.config.debug
@@ -27,6 +28,7 @@ module Client
         end
       end
     end
+    # rubocop:enable Metrics/AbcSize
 
     def start!
       barrier.async { from_client_loop }

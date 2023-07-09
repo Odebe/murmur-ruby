@@ -3,13 +3,13 @@
 module Actions
   module Incoming
     class PermissionQuery < Dispatch[::Proto::Mumble::PermissionQuery]
-      def handle(message)
+      def handle
         authorize!
 
         reply ::Proto::Mumble::PermissionQuery.new(
-                channel_id: message.channel_id,
-                permissions: Acl.granted_permissions(client, nil)
-              )
+          channel_id:  message.channel_id,
+          permissions: Acl.granted_permissions(client, nil)
+        )
       end
     end
   end

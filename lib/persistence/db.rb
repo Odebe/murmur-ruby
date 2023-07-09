@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require_relative './id_pool'
 
 module Persistence
@@ -34,7 +35,7 @@ module Persistence
     def init_rom
       @rom = ROM.container(
         memory: [:memory, 'memory://ruby_murmur'],
-        file:   [:yaml,    db_path]
+        file:   [:yaml, db_path]
       ) do |config|
         config.auto_registration(__dir__)
       end
@@ -43,8 +44,8 @@ module Persistence
     def init_pools
       @pools = {
         clients: IdPool.new,
-        users: IdPool.new,
-        rooms: IdPool.new,
+        users:   IdPool.new,
+        rooms:   IdPool.new
       }
     end
 

@@ -3,7 +3,7 @@
 module Actions
   module Incoming
     class TextMessage < Dispatch[::Proto::Mumble::TextMessage]
-      def handle(message)
+      def handle
         authorize!
 
         targets = []
@@ -15,7 +15,7 @@ module Actions
 
         if message.channel_id.any?
           clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
-          clients.each { |c| targets << c}
+          clients.each { |c| targets << c }
         end
 
         if message.session.any?

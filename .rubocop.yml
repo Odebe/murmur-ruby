@@ -1,0 +1,74 @@
+require:
+  - rubocop-performance
+
+AllCops:
+  NewCops: enable
+  Exclude:
+    - lib/proto/mumble.rb
+
+# Lint
+Lint/EmptyClass:
+  AllowComments: true
+
+# Style
+Style/HashConversion:
+  Enabled: false
+
+Style/HashSyntax:
+  EnforcedShorthandSyntax: either
+
+Style/Documentation:
+  Enabled: false
+
+# Layout
+Layout/HashAlignment:
+  EnforcedColonStyle: table
+
+# Metrics
+Metrics/MethodLength:
+  Max: 25
+  Exclude:
+    - lib/actions/incoming/*
+  AllowedMethods:
+    - read_varint
+    - write_varint
+
+Metrics/AbcSize:
+  Exclude:
+    - lib/actions/incoming/*
+  AllowedMethods:
+    - read_varint
+    - write_varint
+
+Metrics/PerceivedComplexity:
+  Exclude:
+    - lib/actions/incoming/*
+  AllowedMethods:
+    - read_varint
+    - write_varint
+
+Metrics/CyclomaticComplexity:
+  Exclude:
+    - lib/actions/incoming/*
+  AllowedMethods:
+    - read_varint
+    - write_varint
+
+Metrics/BlockLength:
+  Exclude:
+    - lib/tasks/*
+    - spec/**/*
+
+# Naming
+Naming/BlockForwarding:
+  EnforcedStyle: explicit
+
+Naming/ConstantName:
+  Exclude:
+    - lib/acl.rb
+
+Naming/MethodParameterName:
+  AllowedNames:
+    - n
+    - to
+    - id

@@ -3,7 +3,7 @@
 module Actions
   module Incoming
     class Authenticate < Dispatch[::Proto::Mumble::Authenticate]
-      def handle(message)
+      def handle
         if db.clients.count >= app.config[:max_users]
           reply build(:server_reject, reason: :ServerFull)
           disconnect!(:auth_error)
@@ -20,7 +20,7 @@ module Actions
           disconnect!(:auth_error)
         end
 
-        if message.username.size == 0 || message.username.size > app.config[:max_username_length]
+        if message.username.empty? || message.username.size > app.config[:max_username_length]
           reply build(:server_reject, reason: :InvalidUsername)
           disconnect!(:auth_error)
         end

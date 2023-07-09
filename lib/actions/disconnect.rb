@@ -2,7 +2,7 @@
 
 module Actions
   class Disconnect < Base
-    def handle(message)
+    def handle
       session_id = client[:session_id]
       message    = ::Proto::Mumble::UserRemove.new(session: session_id)
 

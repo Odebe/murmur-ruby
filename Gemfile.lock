@@ -6,6 +6,7 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    ast (2.4.2)
     async (2.5.0)
       console (~> 1.10)
       io-event (~> 1.1)
@@ -85,6 +86,7 @@ GEM
       concurrent-ruby (~> 1.0)
     ice_nine (0.11.2)
     io-event (1.1.7)
+    json (2.6.3)
     live (0.5.0)
       async-websocket (~> 0.22.0)
       trenni
@@ -112,6 +114,9 @@ GEM
     net-smtp (0.3.3)
       net-protocol
     openssl (3.1.0)
+    parallel (1.22.1)
+    parser (3.2.0.0)
+      ast (~> 2.4.1)
     process-metrics (0.2.1)
       console (~> 1.8)
       samovar (~> 2.1)
@@ -134,6 +139,9 @@ GEM
       protocol-http (~> 0.2)
       protocol-http1 (~> 0.2)
     rack (3.0.8)
+    rainbow (3.1.1)
+    regexp_parser (2.6.2)
+    rexml (3.2.5)
     rom (5.3.0)
       rom-changeset (~> 5.3, >= 5.3.0)
       rom-core (~> 5.3, >= 5.3.0)
@@ -170,6 +178,22 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.12.0)
     rspec-support (3.12.0)
+    rubocop (1.44.1)
+      json (~> 2.3)
+      parallel (~> 1.10)
+      parser (>= 3.2.0.0)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 1.8, < 3.0)
+      rexml (>= 3.2.5, < 4.0)
+      rubocop-ast (>= 1.24.1, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 3.0)
+    rubocop-ast (1.24.1)
+      parser (>= 3.1.1.0)
+    rubocop-performance (1.15.2)
+      rubocop (>= 1.7.0, < 2.0)
+      rubocop-ast (>= 0.4.0)
+    ruby-progressbar (1.11.0)
     samovar (2.2.0)
       console (~> 1.0)
       mapping (~> 1.0)
@@ -183,6 +207,7 @@ GEM
     trenni (3.14.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    unicode-display_width (2.4.2)
     utopia (2.23.0)
       concurrent-ruby (~> 1.2)
       console (~> 1.0)
@@ -216,6 +241,8 @@ DEPENDENCIES
   rom (~> 5.3)
   rom-yaml
   rspec
+  rubocop
+  rubocop-performance
   zeitwerk
 
 BUNDLED WITH

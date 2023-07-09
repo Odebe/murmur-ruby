@@ -11,7 +11,7 @@ class Configurator
   extend Dry::Initializer
 
   option :loader,    default: -> { Zeitwerk::Loader.new }
-  option :options,   default: -> { Hash.new }
+  option :options,   default: -> { {} }
   option :root_path, default: -> { Pathname(__dir__).join('..') }
 
   def self.call
@@ -20,13 +20,13 @@ class Configurator
 
   def parse_options!
     OptionParser.new do |opts|
-      opts.banner = "Usage: main.rb [options]"
+      opts.banner = 'Usage: main.rb [options]'
 
-      opts.on("--config=PATH", "Config path") do |v|
+      opts.on('--config=PATH', 'Config path') do |v|
         options[:config_path] = Pathname(v)
       end
 
-      opts.on("-h", "--help", "Prints this help") do
+      opts.on('-h', '--help', 'Prints this help') do
         puts opts
         exit
       end

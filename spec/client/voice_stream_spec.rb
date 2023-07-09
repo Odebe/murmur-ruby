@@ -65,8 +65,8 @@ RSpec.describe Client::VoiceStream do
           string
             .bytes[1..]
             .reverse_each
-            .each_with_index
-            .reduce do |(acc, _), (e, i)|
+            .with_index
+            .reduce do |acc, (e, i)|
               acc | (e << (i * 8))
             end
         end
@@ -194,7 +194,7 @@ RSpec.describe Client::VoiceStream do
       end
 
       context 'when Negative recursive varint' do
-        let(:value) { -65536 }
+        let(:value) { -65_536 }
         let(:expected) do
           [
             0xF8,

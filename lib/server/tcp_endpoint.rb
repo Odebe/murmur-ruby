@@ -7,6 +7,7 @@ module Server
   class TcpEndpoint
     attr_reader :endpoint, :app
 
+    # rubocop:disable Metrics/AbcSize
     def initialize(app)
       @app = app
 
@@ -22,7 +23,9 @@ module Server
         ssl_context: ssl_context
       )
     end
+    # rubocop:enable Metrics/AbcSize
 
+    # rubocop:disable Metrics/AbcSize
     def start!
       app.logger.info "Starting TCP endpoint at #{app.config.host}:#{app.config.port}"
 
@@ -37,5 +40,6 @@ module Server
         handler.start!
       end
     end
+    # rubocop:enable Metrics/AbcSize
   end
 end

@@ -31,7 +31,7 @@ class Acl
       Write | Traverse | Enter | Speak | MuteDeafen | Move |
       MakeChannel | LinkChannel | Whisper | TextMessage |
       MakeTempChannel | Listen | Kick | Ban | Register |
-      SelfRegister | ResetUserContent |Cached
+      SelfRegister | ResetUserContent | Cached
 
     DEFAULT =
       Traverse | Enter | Speak | Whisper | TextMessage | Listen

@@ -12,7 +12,7 @@ module Client
           [::Proto::Dicts.find_type(msg.class)].pack('n'),
           [body.size].pack('N'),
           body
-        ].join('')
+        ].join
 
       write raw_msg
     end
@@ -25,7 +25,7 @@ module Client
       # avoiding UdpTunnel message parsing
       # cuz message body is literally voice packet and not protobuf message
       if type == 1
-       ::Proto::Mumble::UDPTunnel.new(packet: body)
+        ::Proto::Mumble::UDPTunnel.new(packet: body)
       else
         ::Proto::Dicts.find_class(type).decode(body)
       end

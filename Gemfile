@@ -1,24 +1,26 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
+git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'async-io'
-gem 'protobuf'
 gem 'concurrent-ruby'
+gem 'protobuf'
 gem 'zeitwerk'
 
 gem 'rom', '~> 5.3'
 gem 'rom-yaml'
 
-gem 'dry-types'
-gem 'dry-initializer'
 gem 'dry-configurable'
+gem 'dry-initializer'
+gem 'dry-types'
 
 group :development do
-  gem 'byebug'
   gem 'async-debug'
+  gem 'byebug'
+  gem 'rubocop'
+  gem 'rubocop-performance'
 end
 
 group :test do

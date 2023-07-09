@@ -10,10 +10,10 @@ module Actions
     param :app
 
     def call
-      with_halt { handle(message) }
+      with_halt { handle }
     end
 
-    def handle(_message)
+    def handle
       raise 'abstract method'
     end
 
@@ -60,9 +60,7 @@ module Actions
     end
 
     def current_async(&block)
-      Async::Task.current.async do
-        block.call
-      end
+      Async::Task.current.async(&block)
     end
   end
 end

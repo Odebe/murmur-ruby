@@ -3,7 +3,7 @@
 module Actions
   module Incoming
     class Version < Dispatch[::Proto::Mumble::Version]
-      def handle(message)
+      def handle
         app.db.clients.set_version(client[:session_id], message)
 
         # TODO: send server version
