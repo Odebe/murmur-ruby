@@ -2,12 +2,15 @@
 
 module Actions
   class Base
-    extend Dry::Initializer
+    attr_reader :handler, :message, :client, :app
 
-    param :handler
-    param :message
-    param :client
-    param :app
+    # We initialize a lot of instances so avoiding dry-initializer
+    def initialize(handler, message, client, app)
+      @handler = handler
+      @message = message
+      @client  = client
+      @app     = app
+    end
 
     def call
       with_halt { handle }

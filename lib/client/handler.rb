@@ -53,10 +53,12 @@ module Client
       current_task.yield
 
       within_connection do
-        stream_loop do
+        loop do
           message = read_client_message
           action = dispatcher.call(message)
           action ? build_action(action, message).call : handle_not_defined(message)
+
+          Async::Task.current.yield
         end
       end
     end
@@ -66,9 +68,7 @@ module Client
       current_task.yield
 
       within_connection do
-        stream_loop do
-          client[:stream].send_message(read_server_message)
-        end
+        loop { client[:stream].send_message(read_server_message) }
       end
     end
 
@@ -82,13 +82,6 @@ module Client
 
     def read_server_message
       client[:queue].dequeue
-    end
-
-    def stream_loop
-      loop do
-        yield
-        Async::Task.current.yield
-      end
     end
 
     def within_connection

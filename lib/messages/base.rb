@@ -2,10 +2,13 @@
 
 module Messages
   class Base
-    extend Dry::Initializer
+    attr_reader :client, :app
 
-    param :client
-    param :app
+    # We initialize a lot of instances so avoiding dry-initializer
+    def initialize(client, app)
+      @client = client
+      @app    = app
+    end
 
     def call(_input)
       raise 'abstract method'
