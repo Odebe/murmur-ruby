@@ -245,6 +245,7 @@ DEPENDENCIES
   rubocop
   rubocop-performance
   ruby-prof
+  timers
   zeitwerk
 
 BUNDLED WITH

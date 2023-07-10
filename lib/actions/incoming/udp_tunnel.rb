@@ -9,12 +9,14 @@ module Actions
 
         buffer     = StringIO.new(message.packet).binmode
         udp_stream = Client::VoiceStream.new(buffer)
-
         udp_packet = Client::VoicePacket.new(client[:session_id])
-
         udp_packet.decode_from(udp_stream)
-        buffer.rewind
+
+        # udp_packet.size + protobuf header size
+        halt! unless client[:traffic_shaper].check!(udp_packet.size + 6)
+
         # adding session_id to packet
+        buffer.rewind
         udp_packet.encode_to(udp_stream)
 
         message = Proto::Mumble::UDPTunnel.new(packet: buffer.string)

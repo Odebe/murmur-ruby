@@ -4,10 +4,13 @@ source 'https://rubygems.org'
 
 git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
+gem 'zeitwerk'
+
 gem 'async-io'
 gem 'concurrent-ruby'
+gem 'timers'
+
 gem 'protobuf'
-gem 'zeitwerk'
 
 gem 'rom', '~> 5.3'
 gem 'rom-yaml'

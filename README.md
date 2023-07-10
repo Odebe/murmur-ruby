@@ -68,6 +68,9 @@ Mumble server implemented with Ruby and [async-io gem](https://github.com/socket
   - [ ] CELT
   - [ ] Speex
 - [ ] Basic role model
+- [ ] Traffic shaping
+  - [x] Throttling
+  - [ ] Leaky bucket
 
 ## Configuration
 See example `run/config.yml`

@@ -10,6 +10,7 @@ module Client
     option :barrier,    default: -> { Async::Barrier.new }
     option :finished,   default: -> { Async::Condition.new }
     option :dispatcher, default: -> { Actions::Dispatch }
+    option :timers,     default: -> { Timers::Group.new }
 
     # rubocop:disable Metrics/AbcSize
     def setup!
@@ -31,6 +32,9 @@ module Client
     # rubocop:enable Metrics/AbcSize
 
     def start!
+      timers.every(1) { client[:traffic_shaper].reset! }
+
+      barrier.async { loop { timers.wait } }
       barrier.async { from_client_loop }
       barrier.async { to_client_loop }
 

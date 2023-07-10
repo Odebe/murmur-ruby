@@ -33,7 +33,7 @@ module Server
         socket = Async::IO::Stream.new(socket)
         stream = Client::ProtobufStream.new(socket)
         queue  = Async::Queue.new
-        client = app.db.clients.create(stream, queue)
+        client = app.db.clients.create(stream, queue, app)
 
         handler = Client::Handler.new(client, app)
         handler.setup!
