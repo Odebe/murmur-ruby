@@ -66,7 +66,7 @@ RSpec.describe Client::VoiceStream do
             .bytes[1..]
             .reverse_each
             .with_index
-            .reduce do |acc, (e, i)|
+            .reduce do |(acc, _), (e, i)|
               acc | (e << (i * 8))
             end
         end
