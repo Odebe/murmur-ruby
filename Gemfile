@@ -20,11 +20,11 @@ gem 'dry-initializer'
 gem 'dry-types'
 
 group :development do
-  gem 'ruby-prof'
   gem 'async-debug'
   gem 'byebug'
   gem 'rubocop'
   gem 'rubocop-performance'
+  gem 'ruby-prof'
 end
 
 group :test do

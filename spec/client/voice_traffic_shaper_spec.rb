@@ -6,7 +6,7 @@ RSpec.describe Client::VoiceTrafficShaper do
   let(:bytes_per_second) { 5 }
   let(:bandwidth) { bytes_per_second * 8 }
   let(:byte) { 1 }
-  
+
   describe '#check!' do
     context 'when packet size greater than bandwidth' do
       it 'drops packet' do

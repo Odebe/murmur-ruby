@@ -32,11 +32,8 @@ module Client
     # rubocop:enable Metrics/AbcSize
 
     def start!
-      timers.every(1) { client[:traffic_shaper].reset! }
-
-      barrier.async { loop { timers.wait } }
-      barrier.async { from_client_loop }
-      barrier.async { to_client_loop }
+      schedule_timers!
+      start_async_tasks!
 
       finished.wait
     ensure
@@ -44,6 +41,16 @@ module Client
     end
 
     private
+
+    def schedule_timers!
+      timers.every(1) { client[:traffic_shaper].reset! }
+    end
+
+    def start_async_tasks!
+      barrier.async { loop { timers.wait } }
+      barrier.async { from_client_loop }
+      barrier.async { to_client_loop }
+    end
 
     # TODO: graceful shutdown
     def shutdown

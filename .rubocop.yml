@@ -32,6 +32,7 @@ Metrics/MethodLength:
   AllowedMethods:
     - read_varint
     - write_varint
+    - varint_size
 
 Metrics/AbcSize:
   Exclude:
@@ -39,6 +40,7 @@ Metrics/AbcSize:
   AllowedMethods:
     - read_varint
     - write_varint
+    - varint_size
 
 Metrics/PerceivedComplexity:
   Exclude:
@@ -46,6 +48,7 @@ Metrics/PerceivedComplexity:
   AllowedMethods:
     - read_varint
     - write_varint
+    - varint_size
 
 Metrics/CyclomaticComplexity:
   Exclude:
@@ -53,6 +56,7 @@ Metrics/CyclomaticComplexity:
   AllowedMethods:
     - read_varint
     - write_varint
+    - varint_size
 
 Metrics/BlockLength:
   Exclude:
