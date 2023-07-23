@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
-    class Ping < Dispatch[TcpAction, ::Proto::Mumble::Ping]
+  module Voice
+    class Ping < Dispatch[UdpAction, ::Voice::Packet::Ping]
       def handle
         reply message
       end

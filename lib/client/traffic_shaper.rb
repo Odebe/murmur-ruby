@@ -3,7 +3,7 @@
 module Client
   # Simple throttler
   # TODO: rewrite to leaky bucket
-  class VoiceTrafficShaper
+  class TrafficShaper
     def initialize(bandwidth)
       @bytes_per_second = bandwidth / 8
       @sent_bytes       = 0

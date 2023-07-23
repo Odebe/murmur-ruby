@@ -2,7 +2,7 @@
 
 module Actions
   module Incoming
-    class TextMessage < Dispatch[::Proto::Mumble::TextMessage]
+    class TextMessage < Dispatch[TcpAction, ::Proto::Mumble::TextMessage]
       def handle
         authorize!
 

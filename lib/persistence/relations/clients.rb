@@ -18,10 +18,12 @@ module Persistence
 
         attribute :room_id, Types::Integer
 
-        attribute :queue, Types.Instance(Async::Queue)
-        attribute :stream, Types.Instance(::Client::ProtobufStream)
-        attribute :crypt_key, Types.Instance(Cipher::Key).optional
-        attribute :traffic_shaper, Types.Instance(::Client::VoiceTrafficShaper)
+        attribute :queue,  Types.Instance(Async::Queue)
+        attribute :timers, Types.Instance(Timers::Group)
+        # attribute :finish, Types.Instance(Async::Condition)
+
+        attribute :crypt_state, Types.Instance(RbMumbleProtocol::CryptState).optional
+        attribute :traffic_shaper, Types.Instance(::Client::TrafficShaper)
 
         attribute :user_id,  Types::Integer.optional
         attribute :username, Types::String.optional
@@ -40,6 +42,10 @@ module Persistence
         attribute :celt_versions, Types::Array.of(Types::Integer)
         attribute :opus,          Types::Bool.optional
         attribute :client_type,   Types::Integer.optional
+
+        associations do
+          has_many :handlers, combine_key: :session_id
+        end
       end
     end
   end

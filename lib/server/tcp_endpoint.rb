@@ -25,21 +25,14 @@ module Server
     end
     # rubocop:enable Metrics/AbcSize
 
-    # rubocop:disable Metrics/AbcSize
     def start!
       app.logger.info "Starting TCP endpoint at #{app.config.host}:#{app.config.port}"
 
       endpoint.accept do |socket|
-        socket = Async::IO::Stream.new(socket)
-        stream = Client::ProtobufStream.new(socket)
-        queue  = Async::Queue.new
-        client = app.db.clients.create(stream, queue, app)
-
-        handler = Client::Handler.new(client, app)
+        handler = Handlers::Client.new(socket, app)
         handler.setup!
         handler.start!
       end
     end
-    # rubocop:enable Metrics/AbcSize
   end
 end

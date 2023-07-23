@@ -13,7 +13,7 @@ module Persistence
         clients
           .restrict(session_id: session_id)
           .command(:update)
-          .call(crypt_key: Cipher::Key.new)
+          .call(crypt_state: RbMumbleProtocol::CryptState.new)
       end
 
       def except(session_id)
@@ -64,13 +64,14 @@ module Persistence
           .reject { |c| except.include?(c[:session_id]) }
       end
 
-      def create(stream, queue, app)
+      def create(queue, app)
         clients
           .command(:create)
           .call(
+            timers:         Timers::Group.new,
             session_id:     id_pool.obtain,
             status:         :initialized,
-            traffic_shaper: ::Client::VoiceTrafficShaper.new(app.config.max_bandwidth),
+            traffic_shaper: ::Client::TrafficShaper.new(app.config.max_bandwidth),
             user_id:        -1,
             room_id:        0,
             username:       nil,
@@ -78,7 +79,6 @@ module Persistence
             self_deaf:      false,
             password:       nil,
             queue:          queue,
-            stream:         stream,
             version:        {},
             tokens:         [],
             celt_versions:  [],

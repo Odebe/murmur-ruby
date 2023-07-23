@@ -10,9 +10,9 @@ module Actions
     actions ::Concurrent::Hash.new
 
     class << self
-      def [](message_klass)
+      def [](base, message_klass)
         # Actions::Base class-level decorator
-        Class.new(Actions::Base) do
+        Class.new(base) do
           define_singleton_method :inherited do |klass|
             super(klass)
             Dispatch.actions[message_klass] = klass

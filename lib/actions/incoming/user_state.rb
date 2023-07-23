@@ -2,7 +2,7 @@
 
 module Actions
   module Incoming
-    class UserState < Dispatch[::Proto::Mumble::UserState]
+    class UserState < Dispatch[TcpAction, ::Proto::Mumble::UserState]
       attr_reader :announce, :target
 
       def handle

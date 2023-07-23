@@ -2,27 +2,27 @@
 
 module Actions
   module Incoming
-    class UdpTunnel < Dispatch[::Proto::Mumble::UDPTunnel]
+    class UdpTunnel < Dispatch[TcpAction, ::Proto::Mumble::UDPTunnel]
       def handle
         authorize!
         halt! if client[:self_mute]
 
-        buffer     = StringIO.new(message.packet).binmode
-        udp_stream = Client::VoiceStream.new(buffer)
-        udp_packet = Client::VoicePacket.new(client[:session_id])
-        udp_packet.decode_from(udp_stream)
+        udp_packet = ::Voice::Decoder.read_decrypted(message.packet)
+        udp_packet.session_id = client[:session_id]
 
         # udp_packet.size + protobuf header size
         halt! unless client[:traffic_shaper].check!(udp_packet.size + 6)
 
         # adding session_id to packet
-        buffer.rewind
-        udp_packet.encode_to(udp_stream)
+        buffer = StringIO.new.binmode
+        stream = ::Voice::Decoder::Stream.new(buffer)
+        udp_packet.encode(stream)
 
         message = Proto::Mumble::UDPTunnel.new(packet: buffer.string)
 
         # TODO: constants
-        case udp_packet.target
+        # TODO: use UDP for clients with UDP
+        case udp_packet.header_target
         when 31
           # Loopback
           reply message

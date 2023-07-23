@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-require 'async/io/protocol/generic'
 
-module Client
-  class ProtobufStream < Async::IO::Protocol::Generic
+module Proto
+  class Decoder < GenericDecoder
     # TODO: write in one call
     def send_message(msg)
-      body = msg.is_a?(::Proto::Mumble::UDPTunnel) ? msg.packet : msg.encode
+      body = msg.is_a?(Mumble::UDPTunnel) ? msg.packet : msg.encode
+
       raw_msg =
         [
-          [::Proto::Dicts.find_type(msg.class)].pack('n'),
+          [Dicts.find_type(msg.class)].pack('n'),
           [body.size].pack('N'),
           body
         ].join
@@ -25,9 +25,9 @@ module Client
       # avoiding UdpTunnel message parsing
       # cuz message body is literally voice packet and not protobuf message
       if type == 1
-        ::Proto::Mumble::UDPTunnel.new(packet: body)
+        Mumble::UDPTunnel.new(packet: body)
       else
-        ::Proto::Dicts.find_class(type).decode(body)
+        Dicts.find_class(type).decode(body)
       end
     end
 

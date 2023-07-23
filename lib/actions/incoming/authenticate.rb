@@ -2,7 +2,7 @@
 
 module Actions
   module Incoming
-    class Authenticate < Dispatch[::Proto::Mumble::Authenticate]
+    class Authenticate < Dispatch[TcpAction, ::Proto::Mumble::Authenticate]
       def handle
         if db.clients.count >= app.config[:max_users]
           reply build(:server_reject, reason: :ServerFull)

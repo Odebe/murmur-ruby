@@ -30,17 +30,6 @@ module Actions
       app.db
     end
 
-    def build(name, input = {})
-      Messages::Registry
-        .call(name)
-        .new(client, app)
-        .call(input)
-    end
-
-    def authorize!
-      halt! unless db.clients.authorized?(client[:session_id])
-    end
-
     def disconnect!(reason)
       handler.finished.signal(reason)
       halt!
@@ -48,14 +37,6 @@ module Actions
 
     def halt!
       throw(:halt)
-    end
-
-    def reply(message)
-      client[:queue] << message
-    end
-
-    def post(message, to:)
-      to[:queue] << message
     end
 
     def with_halt(&block)

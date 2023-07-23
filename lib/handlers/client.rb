@@ -1,38 +1,28 @@
 # frozen_string_literal: true
 
-module Client
-  class Handler
+module Handlers
+  # Handler per client (connection)
+  class Client
     extend Dry::Initializer
 
-    param :client
+    param :io
     param :app
 
-    option :barrier,    default: -> { Async::Barrier.new }
-    option :finished,   default: -> { Async::Condition.new }
-    option :dispatcher, default: -> { Actions::Dispatch }
-    option :timers,     default: -> { Timers::Group.new }
+    option :queue,    default: -> { Async::Queue.new }
+    option :finished, default: -> { Async::Condition.new }
 
-    # rubocop:disable Metrics/AbcSize
+    option :stream,     reader: :private, default: -> { Async::IO::Stream.new(io) }
+    option :barrier,    reader: :private, default: -> { Async::Barrier.new }
+    option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
+
+    option :decoder, reader: :private, default: -> { Proto::Decoder.new(stream) }
+    option :client, reader: :private, default: -> { app.db.clients.create(queue, app) }
+
     def setup!
-      # avoiding app.config.debug check in runtime
-      return unless app.config.debug
-
-      define_singleton_method(:read_client_message) do
-        client[:stream].read_message.tap do |message|
-          app.logger.debug("<< #{message.inspect}")
-        end
-      end
-
-      define_singleton_method(:read_server_message) do
-        client[:queue].dequeue.tap do |message|
-          app.logger.debug(">> #{message.inspect}")
-        end
-      end
+      client[:timers].every(1) { client[:traffic_shaper].reset! }
     end
-    # rubocop:enable Metrics/AbcSize
 
     def start!
-      schedule_timers!
       start_async_tasks!
 
       finished.wait
@@ -42,12 +32,8 @@ module Client
 
     private
 
-    def schedule_timers!
-      timers.every(1) { client[:traffic_shaper].reset! }
-    end
-
     def start_async_tasks!
-      barrier.async { loop { timers.wait } }
+      barrier.async { loop { client[:timers].wait } }
       barrier.async { from_client_loop }
       barrier.async { to_client_loop }
     end
@@ -65,7 +51,7 @@ module Client
 
       within_connection do
         loop do
-          message = read_client_message
+          message = decoder.read_message
           action = dispatcher.call(message)
           action ? build_action(action, message).call : handle_not_defined(message)
 
@@ -79,20 +65,12 @@ module Client
       current_task.yield
 
       within_connection do
-        loop { client[:stream].send_message(read_server_message) }
+        loop { decoder.send_message(queue.dequeue) }
       end
     end
 
     def build_action(action, message = nil)
       action.new(self, message, client, app)
-    end
-
-    def read_client_message
-      client[:stream].read_message
-    end
-
-    def read_server_message
-      client[:queue].dequeue
     end
 
     def within_connection

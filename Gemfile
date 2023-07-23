@@ -10,6 +10,8 @@ gem 'async-io'
 gem 'concurrent-ruby'
 gem 'timers'
 
+gem 'rb_mumble_protocol'
+
 gem 'protobuf'
 
 gem 'rom', '~> 5.3'

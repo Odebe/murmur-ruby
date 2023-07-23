@@ -2,7 +2,7 @@
 
 module Actions
   module Incoming
-    class PermissionQuery < Dispatch[::Proto::Mumble::PermissionQuery]
+    class PermissionQuery < Dispatch[TcpAction, ::Proto::Mumble::PermissionQuery]
       def handle
         authorize!
 
