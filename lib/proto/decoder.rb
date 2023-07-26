@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 module Proto
   class Decoder < GenericDecoder
     # TODO: write in one call
