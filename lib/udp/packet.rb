@@ -9,6 +9,10 @@ module Udp
       @target = nil
     end
 
+    def udp?
+      true
+    end
+
     def with_target(new_target)
       new_self = self.clone
       new_self.target = new_target

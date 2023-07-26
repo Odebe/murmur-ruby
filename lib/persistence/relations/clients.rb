@@ -18,11 +18,16 @@ module Persistence
 
         attribute :room_id, Types::Integer
 
-        attribute :queue,  Types.Instance(Async::Queue)
-        attribute :timers, Types.Instance(Timers::Group)
-        # attribute :finish, Types.Instance(Async::Condition)
+        # Entry point data for sending TCP messages to client
+        attribute :tcp_queue,   Types.Instance(Async::Queue)
+        attribute :tcp_address, Types.Instance(Addrinfo)
 
-        attribute :crypt_state, Types.Instance(RbMumbleProtocol::CryptState).optional
+        # "Entry point" data for sending UDP messages to client
+        attribute :udp_address, Types.Instance(Addrinfo).optional
+
+        attribute :timers, Types.Instance(Timers::Group)
+
+        attribute :crypt_state,    Types.Instance(RbMumbleProtocol::CryptState).optional
         attribute :traffic_shaper, Types.Instance(::Client::TrafficShaper)
 
         attribute :user_id,  Types::Integer.optional
@@ -42,10 +47,6 @@ module Persistence
         attribute :celt_versions, Types::Array.of(Types::Integer)
         attribute :opus,          Types::Bool.optional
         attribute :client_type,   Types::Integer.optional
-
-        associations do
-          has_many :handlers, combine_key: :session_id
-        end
       end
     end
   end

@@ -10,11 +10,8 @@ module Udp
       @data
     end
 
-    # def encode(stream)
-    #   stream.write(0)
-    #   stream.write(1)
-    #   stream.write(3)
-    #   stream.write(4)
-    # end
+    def encode(_stream)
+      raise 'Can\'t encode encrypted packet'
+    end
   end
 end

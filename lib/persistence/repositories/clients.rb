@@ -78,7 +78,7 @@ module Persistence
             self_mute:      false,
             self_deaf:      false,
             password:       nil,
-            queue:          queue,
+            tcp_queue:      queue,
             version:        {},
             tokens:         [],
             celt_versions:  [],
@@ -93,6 +93,11 @@ module Persistence
           .restrict(session_id: session_id)
           .command(:update)
           .call(args)
+      end
+
+      def by_udp_address(address)
+        clients
+          .restrict(udp_address: address)
       end
 
       def set_version(session_id, version)

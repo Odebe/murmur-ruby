@@ -8,6 +8,7 @@ class App
 
   option :logger,  default: -> { AsyncLogger.new }
   option :barrier, default: -> { Async::Barrier.new }
+  option :trap,    default: -> { Async::IO::Trap.new(Signal.list['INT']) }
 
   option :tcp, default: -> { Server::TcpEndpoint.new(self) }
   option :udp, default: -> { Server::UdpEndpoint.new(self) }
@@ -18,6 +19,7 @@ class App
 
   def setup!
     db.setup!
+    trap.install!
   end
 
   def start!
@@ -25,6 +27,8 @@ class App
 
     barrier.async { tcp.start! }
     barrier.async { udp.start! }
+
+    barrier.async { trap.wait { barrier.stop } }
     barrier.wait
   end
 end

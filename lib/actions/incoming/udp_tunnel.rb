@@ -14,11 +14,13 @@ module Actions
         halt! unless client[:traffic_shaper].check!(udp_packet.size + 6)
 
         # adding session_id to packet
-        buffer = StringIO.new.binmode
-        stream = ::Voice::Decoder::Stream.new(buffer)
-        udp_packet.encode(stream)
+        # buffer = StringIO.new.binmode
+        # stream = ::VarintStream.new(buffer)
+        # udp_packet.encode(stream)
 
-        message = Proto::Mumble::UDPTunnel.new(packet: buffer.string)
+        message = Proto::Mumble::UDPTunnel.new(
+          packet: ::Voice::Decoder.encode(udp_packet)
+        )
 
         # TODO: constants
         # TODO: use UDP for clients with UDP

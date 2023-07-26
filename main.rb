@@ -17,6 +17,7 @@ require 'async/io'
 require 'async/queue'
 require 'async/barrier'
 require 'async/condition'
+require 'async/io/trap'
 
 require_relative 'lib/configurator'
 
@@ -28,4 +29,6 @@ Sync do
   Async::Debug.serve if app.config.debug_web
 
   app.start!
+
+  exit
 end

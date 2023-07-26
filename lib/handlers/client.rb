@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Handlers
-  # Handler per client (connection)
+  # Handler per client (TCP connection)
   class Client
     extend Dry::Initializer
 

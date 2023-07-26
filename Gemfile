@@ -27,6 +27,7 @@ group :development do
   gem 'rubocop'
   gem 'rubocop-performance'
   gem 'ruby-prof'
+  gem 'rubrowser'
 end
 
 group :test do

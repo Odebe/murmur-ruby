@@ -6,6 +6,8 @@ GEM
       i18n (>= 1.6, < 2)
       minitest (>= 5.1)
       tzinfo (~> 2.0)
+    anyway_config (2.5.0)
+      ruby-next-core (>= 0.14.0)
     ast (2.4.2)
     async (2.5.0)
       console (~> 1.10)
@@ -87,6 +89,8 @@ GEM
     ice_nine (0.11.2)
     io-event (1.1.7)
     json (2.6.3)
+    litecable (0.8.0)
+      anyway_config (>= 1.0)
     live (0.5.0)
       async-websocket (~> 0.22.0)
       trenni
@@ -113,6 +117,7 @@ GEM
       timeout
     net-smtp (0.3.3)
       net-protocol
+    nio4r (2.5.9)
     openssl (3.1.0)
     parallel (1.22.1)
     parser (3.2.0.0)
@@ -138,6 +143,8 @@ GEM
     protocol-websocket (0.9.1)
       protocol-http (~> 0.2)
       protocol-http1 (~> 0.2)
+    puma (6.3.0)
+      nio4r (~> 2.0)
     rack (3.0.8)
     rainbow (3.1.1)
     rb_mumble_protocol (0.1.0)
@@ -194,6 +201,12 @@ GEM
     rubocop-performance (1.15.2)
       rubocop (>= 1.7.0, < 2.0)
       rubocop-ast (>= 0.4.0)
+    rubrowser (2.11)
+      litecable
+      parser
+      puma
+      websocket
+    ruby-next-core (0.15.3)
     ruby-prof (1.4.5)
     ruby-progressbar (1.11.0)
     samovar (2.2.0)
@@ -225,6 +238,7 @@ GEM
       variant (~> 0.1)
     variant (0.1.1)
       thread-local
+    websocket (1.2.9)
     zeitwerk (2.6.7)
 
 PLATFORMS
@@ -246,6 +260,7 @@ DEPENDENCIES
   rspec
   rubocop
   rubocop-performance
+  rubrowser
   ruby-prof
   timers
   zeitwerk

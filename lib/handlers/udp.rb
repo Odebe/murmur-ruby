@@ -49,18 +49,8 @@ module Handlers
       within_connection do
         loop do
           message = decoder.read_encrypted
-
-          if message.is_a? ::Udp::Encrypted
-            decrypted, client = find_client_by_decryption(message.raw)
-            next unless client
-
-            sender  = message.sender
-            message = ::Voice::Decoder.read_decrypted(decrypted)
-            message.sender = sender
-          end
-
           action = dispatcher.call(message)
-          action ? action.new(self, message, client, app).call : handle_not_defined(message)
+          action ? action.new(self, message, nil, app).call : handle_not_defined(message)
 
           current_task.yield
         end
@@ -72,22 +62,20 @@ module Handlers
       current_task.yield
 
       within_connection do
-        loop { decoder.send_message(queue.dequeue) }
+        loop do
+          msg  = queue.dequeue
+          body = ::Voice::Decoder.encode(msg)
+
+          if msg.is_a? Voice::Packet
+            client = app.db.clients.by_udp_address(msg.target).to_a.last
+            next unless client && client[:crypt_state]
+
+            body = client[:crypt_state].encrypt(body.bytes).pack('C*')
+          end
+
+          decoder.send_message(body, msg.target)
+        end
       end
-    end
-
-    def find_client_by_decryption(encrypted)
-      app.db.clients.all.each do |client|
-        crypt_state = client[:crypt_state]
-        next unless crypt_state
-
-        success, value = crypt_state.decrypt(encrypted.bytes)
-        next unless success
-
-        return [value.pack('C*'), client]
-      end
-
-      [nil, nil]
     end
 
     def within_connection

@@ -8,7 +8,7 @@ module Actions
 
       app.db.clients.delete(session_id)
       app.db.clients.all.each do |another_client|
-        another_client[:queue] << message
+        another_client[:tcp_queue] << message
       end
     end
   end

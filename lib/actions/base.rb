@@ -22,6 +22,28 @@ module Actions
 
     private
 
+    def reply(message)
+      if message.udp?
+        target = client.blank? ? message.sender : client[:udp_address]
+
+        app.udp_handler.queue << message.with_target(target)
+      else
+        client[:tcp_queue] << message
+      end
+    end
+
+    def post(message, to:)
+      if message.udp? && to[:udp_address]
+        app.udp_handler.queue << message.with_target(to[:udp_address])
+      else
+        to[:tcp_queue] << message
+      end
+    end
+
+    def authorize!
+      halt! unless db.clients.authorized?(client[:session_id])
+    end
+
     def message_type
       raise 'abstract method'
     end
