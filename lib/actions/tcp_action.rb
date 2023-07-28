@@ -8,5 +8,9 @@ module Actions
         .new(client, app)
         .call(input)
     end
+
+    def reply(message)
+      client[:tcp_queue] << message
+    end
   end
 end

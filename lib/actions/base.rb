@@ -23,21 +23,15 @@ module Actions
     private
 
     def reply(message)
-      if message.udp?
-        target = client.blank? ? message.sender : client[:udp_address]
-
-        app.udp_handler.queue << message.with_target(target)
-      else
-        client[:tcp_queue] << message
-      end
+      raise 'abstract method'
     end
 
     def post(message, to:)
-      if message.udp? && to[:udp_address]
-        app.udp_handler.queue << message.with_target(to[:udp_address])
-      else
-        to[:tcp_queue] << message
-      end
+      to[:tcp_queue] << message
+    end
+
+    def post_voice(message, to)
+      app.udp_handler.queue << message.with_target(to[:udp_address])
     end
 
     def authorize!
