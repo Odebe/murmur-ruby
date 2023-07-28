@@ -4,8 +4,10 @@ services:
   app:
     build: .
     command: bundle exec ruby main.rb
+    tty: true
     ports:
-      - "64738:64738"
+      - "64738:64738/tcp"
+      - "64738:64738/udp"
     volumes:
       - $PWD/run/config.yml:/app/run/config.yml
       # need to be generated, run "make generate-cert"
