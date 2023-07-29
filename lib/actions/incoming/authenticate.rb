@@ -44,7 +44,9 @@ module Actions
         build(:all_channels).each { |state| reply state }
 
         client_state = build(:user_state, client: client)
+
         db.clients.authorized
+          .reject { |c| c[:session_id] == client[:session_id] }
           .each { |client| post client_state, to: client }
 
         db.clients.update(client[:session_id], room_id: app.config[:default_room])
