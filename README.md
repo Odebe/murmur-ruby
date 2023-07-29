@@ -86,6 +86,9 @@ port: 64_738
 ```yaml
 ssl_cert: 'run/server.cert'
 ssl_key: 'run/server.key'
+
+# Optional field
+ssl_ca: 'run/ca.cert'
 ```
 
 #### Server settings

@@ -13,3 +13,4 @@ services:
       # need to be generated, run "make generate-cert"
       - $PWD/run/server.cert:/app/run/server.cert
       - $PWD/run/server.key:/app/run/server.key
+      - $PWD/run/server.ca:/app/run/server.ca

@@ -3,6 +3,8 @@ host: 0.0.0.0
 port: 64_738
 ssl_cert: 'run/server.cert'
 ssl_key: 'run/server.key'
+ssl_ca: 'run/server.ca'
+ssl_allow_selfsigned: true
 
 # server settings
 max_bandwidth: 192_000

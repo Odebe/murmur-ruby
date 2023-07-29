@@ -14,9 +14,18 @@ module Server
       cert_file = File.open(app.config.ssl_cert)
       key_file  = File.open(app.config.ssl_key)
 
-      ssl_context      = OpenSSL::SSL::SSLContext.new
+      ssl_context = OpenSSL::SSL::SSLContext.new
+
       ssl_context.cert = OpenSSL::X509::Certificate.new(cert_file)
       ssl_context.key  = OpenSSL::PKey::RSA.new(key_file)
+      ssl_context.ca_file = app.config.ssl_ca
+
+      ssl_context.verify_mode = OpenSSL::SSL::VERIFY_PEER unless app.config.ssl_allow_selfsigned
+
+      ssl_context.ciphers = ['AES256-SHA']
+      ssl_context.min_version = OpenSSL::SSL::TLS1_VERSION
+      ssl_context.options |= OpenSSL::SSL::OP_NO_SSLv2
+      ssl_context.options |= OpenSSL::SSL::OP_NO_SSLv3
 
       @endpoint = Async::IO::Endpoint.ssl(
         app.config.host, app.config.port,

@@ -1,2 +1,4 @@
 run/server.cert
 run/server.key
+run/server.ca
+run/root_ca.key

@@ -147,7 +147,7 @@ GEM
       nio4r (~> 2.0)
     rack (3.0.8)
     rainbow (3.1.1)
-    rb_mumble_protocol (0.1.0)
+    rb_mumble_protocol (0.1.1)
     regexp_parser (2.6.2)
     rexml (3.2.5)
     rom (5.3.0)
@@ -254,7 +254,7 @@ DEPENDENCIES
   dry-initializer
   dry-types
   protobuf
-  rb_mumble_protocol
+  rb_mumble_protocol (~> 0.1.1)
   rom (~> 5.3)
   rom-yaml
   rspec

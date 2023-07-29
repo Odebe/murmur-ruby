@@ -76,8 +76,10 @@ class Config
   setting :port,                 constructor: Types::Integer
   setting :ssl_cert,             constructor: Types::String
   setting :ssl_key,              constructor: Types::String
+  setting :ssl_ca,               constructor: Types::String
   setting :debug,                constructor: Types::Bool
   setting :debug_web,            constructor: Types::Bool
+  setting :ssl_allow_selfsigned, constructor: Types::Bool
 
   private
 
