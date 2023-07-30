@@ -30,7 +30,7 @@ module Actions
       to[:tcp_queue] << message
     end
 
-    def post_voice(message, to)
+    def post_voice(message, to:)
       app.udp_handler.queue << message.with_target(to[:udp_address])
     end
 
