@@ -2,7 +2,7 @@
 
 module Voice
   class Packet
-    class Opus < Packet
+    class Opus < Voice
       def decode(stream)
         @sequence_number = stream.read_varint
         @payload_header  = stream.read_varint
@@ -15,20 +15,7 @@ module Voice
         true
       end
 
-      def size
-        return 0 unless @decoded
-
-        # first is header byte
-        1 +
-          varint_size(@sequence_number) +
-          varint_size(@session_id) +
-          varint_size(@payload_header) +
-          @payload_len
-      end
-
       def encode(stream)
-        return 0 unless @decoded
-
         stream.write(@header)
         stream.write_varint(@session_id)
         stream.write_varint(@sequence_number)

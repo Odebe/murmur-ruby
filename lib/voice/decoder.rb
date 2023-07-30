@@ -4,6 +4,14 @@ module Voice
   class Decoder < GenericDecoder
     UDP_PACKET_SIZE = 1024
 
+    VOICE_DICT = {
+      0 => Packet::CeltAlpha,
+      1 => Packet::Ping,
+      2 => Packet::Speex,
+      3 => Packet::CeltBeta,
+      4 => Packet::Opus
+    }.freeze
+
     def self.read_decrypted(raw)
       buffer = StringIO.new(raw).binmode
       stream = VarintStream.new(buffer)
@@ -11,15 +19,7 @@ module Voice
       header = stream.read_byte
       type   = (header & 0xe0) >> 5
 
-      packet_klass =
-        case type
-        when 1
-          Packet::Ping
-        when 4
-          Packet::Opus
-        else
-          raise NotImplementedError
-        end
+      packet_klass = VOICE_DICT.fetch(type) { raise NotImplementedError, "type: #{type}" }
 
       packet = packet_klass.new(header)
       packet.decode(stream)

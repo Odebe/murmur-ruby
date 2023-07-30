@@ -7,6 +7,10 @@ class VarintStream < Async::IO::Protocol::Generic
     @stream.write [value].flatten.pack('C*')
   end
 
+  def size
+    @stream.size
+  end
+
   def write_varint(value)
     i = value
 
