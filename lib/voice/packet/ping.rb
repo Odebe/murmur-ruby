@@ -4,13 +4,13 @@ module Voice
   class Packet
     class Ping < Packet
       def decode(stream)
-        @timestamp = stream.read_varint
+        @timestamp = stream.read(8)
         @decoded = true
       end
 
       def encode(stream)
         stream.write(@header)
-        stream.write_varint(@timestamp)
+        stream.write(@timestamp)
 
         true
       end

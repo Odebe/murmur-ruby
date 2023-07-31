@@ -67,7 +67,7 @@ class VarintStream < Async::IO::Protocol::Generic
   end
 
   def read(n)
-    Array.new(n) { read_byte }
+    Array.new(n) { read_byte }.compact
   end
 
   def read_byte
