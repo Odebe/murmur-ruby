@@ -5,6 +5,9 @@ module Actions
     class UdpTunnel < Dispatch[TcpAction, ::Proto::Mumble::UDPTunnel]
       def handle
         authorize!
+
+        # app.db.clients.clear_udp(client[:session_id])
+
         # halt! if client[:self_mute]
 
         udp_packet = ::Voice::Decoder.read_decrypted(message.packet)
