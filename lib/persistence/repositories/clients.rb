@@ -72,7 +72,7 @@ module Persistence
             session_id:     id_pool.obtain,
             status:         :initialized,
             traffic_shaper: ::Client::TrafficShaper.new(app.config.max_bandwidth),
-            user_id:        -1,
+            user_id:        nil,
             room_id:        0,
             username:       nil,
             self_mute:      false,
