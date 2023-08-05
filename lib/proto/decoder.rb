@@ -2,7 +2,6 @@
 
 module Proto
   class Decoder < GenericDecoder
-    # TODO: write in one call
     def send_message(msg)
       body = msg.is_a?(Mumble::UDPTunnel) ? msg.packet : msg.encode
 
@@ -14,6 +13,7 @@ module Proto
         ].join
 
       write raw_msg
+      flush
     end
 
     def read_message
@@ -42,6 +42,10 @@ module Proto
 
     def read_body(len)
       read(len)
+    end
+
+    def flush
+      @stream.flush
     end
 
     def write(body)
