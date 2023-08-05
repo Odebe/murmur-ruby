@@ -2,12 +2,7 @@
 
 module Handlers
   # Handler per client (TCP connection)
-  class Client
-    extend Dry::Initializer
-
-    param :io
-    param :app
-
+  class Client < Generic
     option :queue,    default: -> { Async::Queue.new }
     option :finished, default: -> { Async::Condition.new }
 
@@ -71,24 +66,6 @@ module Handlers
 
     def build_action(action, message = nil)
       action.new(self, message, client, app)
-    end
-
-    def within_connection
-      yield
-    rescue OpenSSL::SSL::SSLError
-      # It's okay, client has disconnected.
-    rescue StandardError => e
-      app.logger.error(e)
-    ensure
-      finished.signal(:disconnect)
-    end
-
-    def handle_not_defined(message)
-      puts "Undefined message: #{message.inspect}"
-    end
-
-    def current_task
-      Async::Task.current
     end
   end
 end

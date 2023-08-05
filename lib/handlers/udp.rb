@@ -1,13 +1,8 @@
 # frozen_string_literal: true
 
 module Handlers
-  # Handler per server
-  class Udp
-    extend Dry::Initializer
-
-    param :io
-    param :app
-
+  # Handler per server (UDP socket)
+  class Udp < Generic
     option :queue,    default: -> { Async::Queue.new }
     option :finished, default: -> { Async::Condition.new }
 
@@ -74,24 +69,6 @@ module Handlers
           decoder.send_message(body, msg.target)
         end
       end
-    end
-
-    def within_connection
-      yield
-    rescue OpenSSL::SSL::SSLError
-      # It's okay, client has disconnected.
-    rescue StandardError => e
-      app.logger.error(e)
-    ensure
-      finished.signal(:disconnect)
-    end
-
-    def handle_not_defined(message)
-      puts "Undefined message: #{message.inspect}"
-    end
-
-    def current_task
-      Async::Task.current
     end
   end
 end
