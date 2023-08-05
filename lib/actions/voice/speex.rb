@@ -2,7 +2,7 @@
 
 module Actions
   module Voice
-    class Opus < Dispatch[Implementation, ::Voice::Packet::Opus]
+    class Speex < Dispatch[Implementation, ::Voice::Packet::Speex]
     end
   end
 end

@@ -2,7 +2,7 @@
 
 module Actions
   module Voice
-    class Opus < Dispatch[Implementation, ::Voice::Packet::Opus]
+    class CeltAlpha < Dispatch[Implementation, ::Voice::Packet::CeltAlpha]
     end
   end
 end
