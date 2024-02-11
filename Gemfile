@@ -10,7 +10,7 @@ gem 'async-io'
 gem 'concurrent-ruby'
 gem 'timers'
 
-gem 'rb_mumble_protocol', '~> 0.3'
+gem 'rb_mumble_protocol', '~> 0.3.1'
 
 gem 'protobuf'
 
