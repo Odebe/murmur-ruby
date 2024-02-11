@@ -13,7 +13,7 @@ module Persistence
         clients
           .restrict(session_id: session_id)
           .command(:update)
-          .call(crypt_state: RbMumbleProtocol::CryptState.new)
+          .call(crypt_state: ::Client::CryptoState.new)
       end
 
       def except(session_id)

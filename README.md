@@ -9,6 +9,8 @@ Mumble server implemented with Ruby and [async-io gem](https://github.com/socket
 * Run container `docker-compose up -d`
 
 ## Roadmap
+Not all points will be implemented.
+
 - [ ] Messages
   - [ ] TCP
     - [x] Version
@@ -61,12 +63,13 @@ Mumble server implemented with Ruby and [async-io gem](https://github.com/socket
     - [x] ServerConfig
     - [ ] SuggestConfig
   - [ ] UDP
-    - [ ] Ping
-    - [ ] Voice (see also 'Voice parsing')
-- [ ] Voice parsing
+    - [x] Ping
+    - [x] Voice (see also 'Voice parsing')
+    - [ ] Stable CryptState
+- [x] Voice parsing
   - [x] OPUS
-  - [ ] CELT
-  - [ ] Speex
+  - [x] CELT
+  - [x] Speex
 - [ ] Basic role model
 - [ ] Traffic shaping
   - [x] Throttling
@@ -83,6 +86,9 @@ port: 64_738
 ```
 
 #### SSL block
+##### Selfsigned cert
+Run `make generate-cert`
+
 ```yaml
 ssl_cert: 'run/server.cert'
 ssl_key: 'run/server.key'
@@ -90,6 +96,9 @@ ssl_key: 'run/server.key'
 # Optional field
 ssl_ca: 'run/ca.cert'
 ```
+
+##### Let's Encrypt (recommended)
+
 
 #### Server settings
 ```yaml

@@ -27,7 +27,7 @@ module Persistence
 
         attribute :timers, Types.Instance(Timers::Group)
 
-        attribute :crypt_state,    Types.Instance(RbMumbleProtocol::CryptState).optional
+        attribute :crypt_state,    Types.Instance(::Client::CryptoState).optional
         attribute :traffic_shaper, Types.Instance(::Client::TrafficShaper)
 
         attribute :user_id,  Types::Integer.optional
