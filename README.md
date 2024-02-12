@@ -1,5 +1,5 @@
 # MurmurRuby
-Mumble server implemented with Ruby and [async-io gem](https://github.com/socketry/async-io).
+Mumble server implemented with Ruby and [async-io](https://github.com/socketry/async-io)/[rb_mumble_protocol](https://github.com/Odebe/rb_mumble_protocol) gems.
 
 ## Installation
 ### Docker compose
