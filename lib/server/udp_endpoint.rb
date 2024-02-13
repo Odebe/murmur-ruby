@@ -23,5 +23,9 @@ module Server
         handler.start!
       end
     end
+
+    def stop!
+      endpoint.close!
+    end
   end
 end

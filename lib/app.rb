@@ -28,7 +28,14 @@ class App
     barrier.async { tcp.start! }
     barrier.async { udp.start! }
 
-    barrier.async { trap.wait { barrier.stop } }
+    barrier.async { trap.wait { stop! } }
     barrier.wait
+  end
+
+  def stop!
+    tcp.stop!
+    udp.stop!
+
+    barrier.stop
   end
 end
