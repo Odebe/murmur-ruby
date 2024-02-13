@@ -1,5 +1,16 @@
 # frozen_string_literal: true
 
+# it has to be done
+# full monkey
+module Async
+  class Clock
+    def reset!
+      @total = 0
+      @started = Async::Clock.now
+    end
+  end
+end
+
 module Client
   class CryptoState
     # Async::Clock uses ::Process.clock_gettime(::Process::CLOCK_MONOTONIC)
@@ -51,7 +62,7 @@ module Client
 
     def restart(clock)
       elapsed = clock.stop!
-      clock.start!
+      clock.reset!
       elapsed
     end
   end
