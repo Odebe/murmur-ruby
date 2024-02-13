@@ -24,7 +24,7 @@ module Actions
           if tcp.any?
             proto = Proto::Mumble::UDPTunnel.new(packet: ::Voice::Decoder.encode(message))
 
-            udp.each { |listener| post proto, to: listener }
+            tcp.each { |listener| post proto, to: listener }
           end
         end
       end
