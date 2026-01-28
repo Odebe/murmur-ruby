@@ -53,12 +53,12 @@ module Actions
       end
 
       def clear_unsupported_fields
-        announce.temporary_access_tokens  = []
-        announce.listening_channel_add    = []
-        announce.listening_channel_remove = []
+        announce.temporary_access_tokens.clear
+        announce.listening_channel_add.clear
+        announce.listening_channel_remove.clear
 
         # ignoring (self-)registration
-        announce.user_id = nil
+        announce.clear_user_id
       end
 
       def broadcast_announce
@@ -66,7 +66,7 @@ module Actions
       end
 
       def check_channel_change
-        return unless message.field?(:channel_id)
+        return unless message.has_channel_id?
         return unless db.rooms.exists?(message.channel_id)
 
         db.clients.update(client[:session_id], room_id: message.channel_id)
@@ -74,7 +74,7 @@ module Actions
       end
 
       def check_self_mute
-        return unless message.field?(:self_mute)
+        return unless message.has_self_mute?
 
         db.clients.update(client[:session_id], self_deaf: message.self_mute)
         announce.self_mute = message.self_mute
@@ -85,7 +85,7 @@ module Actions
       end
 
       def check_self_deaf
-        return unless message.field?(:self_deaf)
+        return unless message.has_self_deaf?
 
         db.clients.update(client[:session_id], self_deaf: message.self_deaf)
         announce.self_deaf = message.self_deaf

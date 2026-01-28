@@ -10,9 +10,9 @@ gem 'async-io'
 gem 'concurrent-ruby'
 gem 'timers'
 
-gem 'rb_mumble_protocol', '~> 0.3.1'
+gem 'rb_mumble_protocol', '~> 0.4.0', github: 'Odebe/rb_mumble_protocol'
 
-gem 'protobuf'
+gem 'google-protobuf'
 
 gem 'rom', '~> 5.3'
 gem 'rom-yaml'

@@ -3,7 +3,7 @@
 module Proto
   class Decoder < GenericDecoder
     def send_message(msg)
-      body = msg.is_a?(Mumble::UDPTunnel) ? msg.packet : msg.encode
+      body = msg.is_a?(Mumble::UDPTunnel) ? msg.packet : msg.class.encode(msg)
 
       raw_msg =
         [

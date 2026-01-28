@@ -17,6 +17,8 @@ module Voice
 
         loop do
           frame_header = stream.read_byte
+          break if frame_header.nil?
+
           len = frame_header & 0x7F
 
           @frames <<

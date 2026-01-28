@@ -33,21 +33,21 @@ module Actions
       end
 
       def check_channel
-        return unless message.field?(:channel_id)
+        return unless message.has_channel_id?
 
         clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
         targets.push(*clients)
       end
 
       def check_client
-        return unless message.field?(:session)
+        return unless message.has_session?
 
         clients = db.clients.by_sessions(message.session)
         targets.push(*clients)
       end
 
       def check_permission!
-        return unless message.field?(:tree_id)
+        return unless message.has_tree_id?
 
         reply build(:permission_denied, reason: 'Tree message not supported')
         halt!
