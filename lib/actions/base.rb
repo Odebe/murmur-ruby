@@ -26,7 +26,7 @@ module Actions
       action.new(handler, message, target || client, app)
     end
 
-    def reply(message)
+    def reply(_message)
       raise 'abstract method'
     end
 

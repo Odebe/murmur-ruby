@@ -6,8 +6,8 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'zeitwerk'
 
+gem 'async-debug'
 gem 'async-io'
-gem "async-debug"
 
 gem 'io-endpoint'
 

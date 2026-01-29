@@ -1,56 +1,58 @@
 # frozen_string_literal: true
 
 module Actions
-  module Tcp::Incoming
-    class TextMessage < Dispatch[TcpAction, ::Proto::Mumble::TextMessage]
-      attr_reader :targets, :announce
+  module Tcp
+    module Incoming
+      class TextMessage < Dispatch[TcpAction, ::Proto::Mumble::TextMessage]
+        attr_reader :targets, :announce
 
-      def handle
-        authorize!
-        check_permission!
+        def handle
+          authorize!
+          check_permission!
 
-        build_announce
+          build_announce
 
-        check_channel
-        check_client
+          check_channel
+          check_client
 
-        send_announce
-      end
+          send_announce
+        end
 
-      private
+        private
 
-      def build_announce
-        @targets  = []
-        @announce = message
-        @announce.actor = client[:session_id]
-      end
+        def build_announce
+          @targets  = []
+          @announce = message
+          @announce.actor = client[:session_id]
+        end
 
-      def send_announce
-        targets.uniq!
-        return if targets.none?
+        def send_announce
+          targets.uniq!
+          return if targets.none?
 
-        targets.each { |t| post message, to: t }
-      end
+          targets.each { |t| post message, to: t }
+        end
 
-      def check_channel
-        return unless message.has_channel_id?
+        def check_channel
+          return unless message.has_channel_id?
 
-        clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
-        targets.push(*clients)
-      end
+          clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
+          targets.push(*clients)
+        end
 
-      def check_client
-        return unless message.has_session?
+        def check_client
+          return unless message.has_session?
 
-        clients = db.clients.by_sessions(message.session)
-        targets.push(*clients)
-      end
+          clients = db.clients.by_sessions(message.session)
+          targets.push(*clients)
+        end
 
-      def check_permission!
-        return unless message.has_tree_id?
+        def check_permission!
+          return unless message.has_tree_id?
 
-        reply build(:permission_denied, reason: 'Tree message not supported')
-        halt!
+          reply build(:permission_denied, reason: 'Tree message not supported')
+          halt!
+        end
       end
     end
   end

@@ -1,20 +1,22 @@
 # frozen_string_literal: true
 
 module Actions
-  module Tcp::Incoming
-    class Ping < Dispatch[TcpAction, ::Proto::Mumble::Ping]
-      def handle
-        crypt = client[:crypt_state]
+  module Tcp
+    module Incoming
+      class Ping < Dispatch[TcpAction, ::Proto::Mumble::Ping]
+        def handle
+          crypt = client[:crypt_state]
 
-        if crypt
-          stats = crypt.stats
+          if crypt
+            stats = crypt.stats
 
-          message.good = stats['good']
-          message.late = stats['late']
-          message.lost = stats['lost']
+            message.good = stats['good']
+            message.late = stats['late']
+            message.lost = stats['lost']
+          end
+
+          reply message
         end
-
-        reply message
       end
     end
   end
