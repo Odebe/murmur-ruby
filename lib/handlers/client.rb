@@ -10,7 +10,7 @@ module Handlers
     option :barrier,    reader: :private, default: -> { Async::Barrier.new }
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
 
-    option :decoder, reader: :private, default: -> { Proto::Decoder.new(stream) }
+    option :decoder, reader: :private, default: -> { Decoders::Tcp.new(stream) }
     option :client, reader: :private, default: -> { app.db.clients.create(queue, app) }
 
     def setup!

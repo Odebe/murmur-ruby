@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-module Proto
-  class Decoder < GenericDecoder
+module Decoders
+  class Tcp < Decoders::Generic
     def send_message(msg)
-      body = msg.is_a?(Mumble::UDPTunnel) ? msg.packet : msg.class.encode(msg)
+      body = msg.is_a?(Proto::Mumble::UDPTunnel) ? msg.packet : msg.class.encode(msg)
 
       raw_msg =
         [
-          [Dicts.find_type(msg.class)].pack('n'),
+          [Mapper.find_type(msg.class)].pack('n'),
           [body.size].pack('N'),
           body
         ].join
@@ -24,9 +24,9 @@ module Proto
       # avoiding UdpTunnel message parsing
       # cuz message body is literally voice packet and not protobuf message
       if type == 1
-        Mumble::UDPTunnel.new(packet: body)
+        Proto::Mumble::UDPTunnel.new(packet: body)
       else
-        Dicts.find_class(type).decode(body)
+        Mapper.find_class(type).decode(body)
       end
     end
 

@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
-module Voice
-  class Decoder < GenericDecoder
+module Decoders
+  class Udp < Decoders::Generic
     UDP_PACKET_SIZE = 1024
 
     VOICE_DICT = {
-      0 => Packet::CeltAlpha,
-      1 => Packet::Ping,
-      2 => Packet::Speex,
-      3 => Packet::CeltBeta,
-      4 => Packet::Opus
+      0 => Voice::Packet::CeltAlpha,
+      1 => Voice::Packet::Ping,
+      2 => Voice::Packet::Speex,
+      3 => Voice::Packet::CeltBeta,
+      4 => Voice::Packet::Opus
     }.freeze
 
     def self.read_decrypted(raw)
@@ -43,9 +43,9 @@ module Voice
 
       packet_klass =
         if data.size == 12 && crypt_header == [0, 0, 0, 0]
-          Udp::Ping
+          ::Udp::Ping
         else
-          Udp::Encrypted
+          ::Udp::Encrypted
         end
 
       packet = packet_klass.new(sender: sender_sockaddr)

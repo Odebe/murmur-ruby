@@ -9,7 +9,7 @@ module Handlers
     option :barrier,    reader: :private, default: -> { Async::Barrier.new }
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
 
-    option :decoder, reader: :private, default: -> { Voice::Decoder.new(io) }
+    option :decoder, reader: :private, default: -> { Decoders::Udp.new(io) }
 
     def setup!
       app.udp_handler = self
@@ -59,7 +59,7 @@ module Handlers
       within_connection do
         loop do
           msg  = queue.dequeue
-          body = ::Voice::Decoder.encode(msg)
+          body = ::Decoders::Udp.encode(msg)
 
           if msg.is_a? Voice::Packet
             client = app.db.clients.by_udp_address(msg.target).to_a.last

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-module Proto
-  module Dicts
+class Decoders::Tcp
+  module Mapper
     class ProtocolError < StandardError; end
 
     # 4xx-like

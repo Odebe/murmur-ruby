@@ -7,7 +7,7 @@ module Actions
         @decrypted, @client = find_client_and_decrypt
         halt! unless @client
 
-        voice_packet = ::Voice::Decoder.read_decrypted(@decrypted)
+        voice_packet = ::Decoders::Udp.read_decrypted(@decrypted)
         voice_packet.sender = message.sender
 
         action = Actions::Dispatch.call(voice_packet)

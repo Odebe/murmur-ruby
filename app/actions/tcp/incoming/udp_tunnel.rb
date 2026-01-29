@@ -11,13 +11,13 @@ module Actions
 
         halt! if client[:self_mute]
 
-        udp_packet = ::Voice::Decoder.read_decrypted(message.packet)
+        udp_packet = ::Decoders::Udp.read_decrypted(message.packet)
         udp_packet.session_id = client[:session_id]
 
         # udp_packet.size + protobuf header size
         halt! unless client[:traffic_shaper].check!(udp_packet.size + 6)
 
-        message = Proto::Mumble::UDPTunnel.new(packet: ::Voice::Decoder.encode(udp_packet))
+        message = Proto::Mumble::UDPTunnel.new(packet: ::Decoders::Udp.encode(udp_packet))
 
         # TODO: constants
         # TODO: use UDP for clients with UDP

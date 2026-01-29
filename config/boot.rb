@@ -22,3 +22,5 @@ require 'async/queue'
 require 'async/barrier'
 require 'async/condition'
 require 'async/io/trap'
+
+require 'async/io/protocol/generic'
