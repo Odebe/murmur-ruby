@@ -11,4 +11,4 @@ generate-proto:
 	mv $(RUBY_OUT)/MumbleUDP_pb.rb $(RUBY_OUT)/mumble_udp.rb
 
 run-profile:
-	(bundle exec ruby-prof main.rb ) &> ruby-prof.report
+	(bundle exec ruby bin/server.rb) &> ruby-prof.report
