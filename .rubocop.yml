@@ -5,6 +5,7 @@ AllCops:
   NewCops: enable
   Exclude:
     - lib/proto/mumble.rb
+    - lib/proto/mumble_pb.rb
 
 # Lint
 Lint/EmptyClass:
