@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class UserState < Dispatch[TcpAction, ::Proto::Mumble::UserState]
       attr_reader :announce, :target
 

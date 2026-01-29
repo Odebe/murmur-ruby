@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class Authenticate < Dispatch[TcpAction, ::Proto::Mumble::Authenticate]
       def handle
         if db.clients.count >= app.config[:max_users]

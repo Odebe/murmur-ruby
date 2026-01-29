@@ -93,6 +93,7 @@ GEM
       rake (>= 13)
     http-accept (2.2.0)
     ice_nine (0.11.2)
+    io-endpoint (0.17.1)
     io-event (1.1.7)
     json (2.6.3)
     litecable (0.8.0)
@@ -250,6 +251,7 @@ DEPENDENCIES
   dry-initializer
   dry-types
   google-protobuf
+  io-endpoint
   rb_mumble_protocol (~> 0.4.0)!
   rom (~> 5.3)
   rom-yaml

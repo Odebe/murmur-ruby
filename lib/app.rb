@@ -1,41 +1,59 @@
 # frozen_string_literal: true
 
 class App
-  extend Dry::Initializer
+  class << self
+    attr_accessor :config_path
 
-  option :config
-  option :db
+    def load!
+      load_code
 
-  option :logger,  default: -> { AsyncLogger.new }
-  option :barrier, default: -> { Async::Barrier.new }
-  option :trap,    default: -> { Async::IO::Trap.new(Signal.list['INT']) }
+      config
+      db
+      server
+    end
 
-  option :tcp, default: -> { Server::TcpEndpoint.new(self) }
-  option :udp, default: -> { Server::UdpEndpoint.new(self) }
+    def start!
+      server.setup!
+      server.start!
+    end
 
-  option :udp_handler, default: -> {}
+    private
 
-  attr_writer :udp_handler
+    def load_code
+      load_paths.each { |path| loader.push_dir(path) }
 
-  def setup!
-    db.setup!
-    trap.install!
-  end
+      loader.setup
+      loader.eager_load
+    end
 
-  def start!
-    logger.start!
+    def server
+      @server ||= Server.new(config:, db:)
+    end
 
-    barrier.async { tcp.start! }
-    barrier.async { udp.start! }
+    def config
+      @config ||= Config.read_from_file(config_path)
+    end
 
-    barrier.async { trap.wait { stop! } }
-    barrier.wait
-  end
+    def db
+      @db ||= Persistence::Db.new(config_path)
+    end
 
-  def stop!
-    tcp.stop!
-    udp.stop!
+    def root_path
+      @root_path ||= Pathname(__dir__).join('..')
+    end
 
-    barrier.stop
+    def loader
+      @loader ||= Zeitwerk::Loader.new
+    end
+
+    def load_paths
+      @load_paths ||=
+        %w[
+          lib
+          app
+        ].each do |path|
+          root_path.join(path)
+        end
+    end
   end
 end

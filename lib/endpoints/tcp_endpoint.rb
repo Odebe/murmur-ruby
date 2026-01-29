@@ -3,7 +3,7 @@
 require 'async/io'
 require 'async/io/stream'
 
-module Server
+module Endpoints
   class TcpEndpoint
     attr_reader :endpoint, :app
 

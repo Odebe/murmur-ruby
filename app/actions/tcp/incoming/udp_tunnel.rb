@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class UdpTunnel < Dispatch[TcpAction, ::Proto::Mumble::UDPTunnel]
       def handle
         authorize!

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class CryptSync < Dispatch[TcpAction, ::Proto::Mumble::CryptSetup]
       def handle
         state = client[:crypt_state]

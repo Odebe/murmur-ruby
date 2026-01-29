@@ -37,7 +37,7 @@ module Handlers
     def shutdown
       barrier.stop
 
-      build_action(::Actions::Disconnect).call
+      build_action(::Actions::Tcp::Disconnect).call
     end
 
     def from_client_loop
@@ -48,6 +48,8 @@ module Handlers
         loop do
           message = decoder.read_message
           action = dispatcher.call(message)
+          app.logger.debug("[TCP] #{message.inspect}")
+
           action ? build_action(action, message).call : handle_not_defined(message)
 
           Async::Task.current.yield
@@ -60,7 +62,12 @@ module Handlers
       current_task.yield
 
       within_connection do
-        loop { decoder.send_message(queue.dequeue) }
+        loop do
+          # TODO: check it later
+          Async(transient: true) do
+            decoder.send_message(queue.dequeue)
+          end
+        end
       end
     end
 

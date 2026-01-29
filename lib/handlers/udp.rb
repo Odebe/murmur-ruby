@@ -43,6 +43,8 @@ module Handlers
         loop do
           message = decoder.read_encrypted
           action = dispatcher.call(message)
+          app.logger.debug("[UDP] #{message.inspect}")
+
           action ? action.new(self, message, nil, app).call : handle_not_defined(message)
 
           current_task.yield

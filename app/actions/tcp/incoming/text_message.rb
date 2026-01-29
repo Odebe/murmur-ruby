@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class TextMessage < Dispatch[TcpAction, ::Proto::Mumble::TextMessage]
       attr_reader :targets, :announce
 

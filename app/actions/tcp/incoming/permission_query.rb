@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class PermissionQuery < Dispatch[TcpAction, ::Proto::Mumble::PermissionQuery]
       def handle
         authorize!

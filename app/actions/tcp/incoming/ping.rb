@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Actions
-  module Incoming
+  module Tcp::Incoming
     class Ping < Dispatch[TcpAction, ::Proto::Mumble::Ping]
       def handle
         crypt = client[:crypt_state]

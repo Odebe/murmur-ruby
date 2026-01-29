@@ -7,6 +7,10 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 gem 'zeitwerk'
 
 gem 'async-io'
+gem "async-debug"
+
+gem 'io-endpoint'
+
 gem 'concurrent-ruby'
 gem 'timers'
 
