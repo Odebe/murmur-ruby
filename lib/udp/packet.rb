@@ -2,25 +2,16 @@
 
 module Udp
   class Packet
-    attr_accessor :target, :sender
+    attr_accessor :sender_sockaddr
 
-    def initialize(sender:)
-      @sender = sender
-      @target = nil
+    def legacy?
+      false
     end
 
-    def with_target(new_target)
-      new_self = clone
-      new_self.target = new_target
-      new_self
-    end
-
-    def decode(_stream)
-      raise 'abstract method'
-    end
-
-    def raw
-      raise 'abstract method'
+    def clone_for_target(target_sockaddr)
+      copy = clone
+      copy.sender_sockaddr = target_sockaddr
+      copy
     end
   end
 end

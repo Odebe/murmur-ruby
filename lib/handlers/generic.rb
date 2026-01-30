@@ -24,6 +24,7 @@ module Handlers
       # It's okay, client has disconnected.
     rescue StandardError => e
       app.logger.error(e)
+      retry
     ensure
       finished.signal(:disconnect)
     end

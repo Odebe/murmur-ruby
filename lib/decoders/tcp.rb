@@ -53,7 +53,7 @@ module Decoders
       # avoiding UdpTunnel message parsing
       # cuz message body is literally voice packet and not protobuf message
       if type_eql(type, Proto::Mumble::UDPTunnel)
-        Proto::Mumble::UDPTunnel.new(packet: body)
+        ::Proto::MumbleUdp::Audio.decode(body[1..-1])
       else
         find_class(type).decode(body)
       end

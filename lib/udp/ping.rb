@@ -2,18 +2,19 @@
 
 module Udp
   class Ping < Packet
-    attr_accessor :users_count, :max_bandwidth, :max_users
+    attr_accessor :users_count, :max_bandwidth, :max_users, :ident
 
-    def decode(stream)
-      @ident = stream.read(8)
+    def self.encode(msg)
+      buffer = StringIO.new.binmode
+      # stream = VarintStream.new(buffer)
+
+      msg.encode(buffer)
+
+      buffer.string
     end
 
     def legacy?
       true
-    end
-
-    def raw
-      @ident
     end
 
     def encode(stream)

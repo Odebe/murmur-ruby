@@ -5,8 +5,12 @@ module Actions
     class Encrypted
       class Audio < Dispatch[UdpAction, Proto::MumbleUdp::Audio]
         def handle
-          # TODO: handle audio
-          puts "audio received: #{message.inspect}"
+          message.context = 0
+          message.sender_session = client[:session_id]
+
+          # TODO: implement properly
+
+          reply message
         end
       end
     end

@@ -2,14 +2,15 @@
 
 module Actions
   class Base
-    attr_reader :handler, :message, :client, :app
+    attr_reader :handler, :message, :client, :app, :sender_sockaddr
 
     # We initialize a lot of instances so avoiding dry-initializer
-    def initialize(handler, message, client, app)
+    def initialize(handler, message, client, app, sender_sockaddr: nil)
       @handler = handler
       @message = message
       @client  = client
       @app     = app
+      @sender_sockaddr = sender_sockaddr
     end
 
     def call

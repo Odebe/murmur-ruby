@@ -3,9 +3,9 @@
 module Actions
   class UdpAction < Base
     def reply(message)
-      target = client.nil? ? message.sender : client[:udp_address]
+      target = client.nil? ? sender_sockaddr : client[:udp_address]
 
-      app.udp_handler.queue << message.with_target(target)
+      app.udp_handler.queue << [target, message]
     end
   end
 end

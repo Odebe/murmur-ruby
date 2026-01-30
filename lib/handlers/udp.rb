@@ -41,23 +41,24 @@ module Handlers
 
       within_connection do
         loop do
-          client = nil
           message = decoder.read_encrypted
           next if message.nil?
 
-          unless message.legacy?
-            result = find_user_by_address_and_decrypt(message)
-            next unless result
-
-            decrypted_data, client = result
-
-            message = decoder.decode(decrypted_data)
+          if message.legacy?
+            action = dispatcher.call(message)
+            handle_client_message(action, message, sender_sockaddr: message.sender_sockaddr)
+            next
           end
 
-          action = dispatcher.call(message)
-          handle_not_defined(message) and next if action.nil?
+          result = find_user_by_address_and_decrypt(message)
+          next unless result
 
-          action.new(self, message, client, app).call
+          decrypted_data, client = result
+
+          proto_message = decoder.decode(decrypted_data)
+          action = dispatcher.call(proto_message)
+
+          handle_client_message(action, proto_message, client: client)
         end
       end
     end
@@ -68,19 +69,30 @@ module Handlers
 
       within_connection do
         loop do
-          msg  = queue.dequeue
+          target, msg = queue.dequeue
           body = ::Decoders::Udp.encode(msg)
 
-          if msg.is_a? Voice::Packet
-            client = app.db.clients.by_udp_address(msg.target).to_a.last
+          unless msg.is_a?(::Udp::Ping)
+            # TODO: pass from action
+            client = app.db.clients.by_udp_address(target).to_a.last
             next unless client && client[:crypt_state]
 
-            body = client[:crypt_state].encrypt(body.bytes).pack('C*')
+            buffer = StringIO.new.binmode
+            buffer.write([decoder.find_type(msg.class)].pack('C'))
+            buffer.write(body)
+
+            body = client[:crypt_state].encrypt(buffer.string.bytes).pack('C*')
           end
 
-          decoder.send_message(body, msg.target)
+          decoder.send_message(body, target)
         end
       end
+    end
+
+    def handle_client_message(action, message, client: nil, sender_sockaddr: nil)
+      handle_not_defined(message) and return if action.nil?
+
+      action.new(self, message, client, app, sender_sockaddr: sender_sockaddr).call
     end
 
     def find_user_by_address_and_decrypt(message)
