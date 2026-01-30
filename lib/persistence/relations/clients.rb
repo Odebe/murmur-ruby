@@ -24,6 +24,7 @@ module Persistence
 
         # "Entry point" data for sending UDP messages to client
         attribute :udp_address, Types.Instance(Addrinfo).optional
+        attribute :remote_address, Types.Instance(Addrinfo)
 
         attribute :timers, Types.Instance(Timers::Group)
 

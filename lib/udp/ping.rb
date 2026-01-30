@@ -8,6 +8,10 @@ module Udp
       @ident = stream.read(8)
     end
 
+    def legacy?
+      true
+    end
+
     def raw
       @ident
     end

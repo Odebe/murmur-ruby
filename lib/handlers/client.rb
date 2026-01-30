@@ -10,7 +10,7 @@ module Handlers
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
 
     option :decoder, reader: :private, default: -> { Decoders::Tcp.new(io) }
-    option :client, reader: :private, default: -> { app.db.clients.create(queue, app) }
+    option :client, reader: :private, default: -> { app.db.clients.create(queue, app, io.remote_address) }
 
     def setup!
       client[:timers].every(1) { client[:traffic_shaper].reset! }
@@ -58,9 +58,7 @@ module Handlers
 
       within_connection do
         loop do
-          message = queue.dequeue
-          puts("TCP >>: #{message.inspect}")
-          decoder.send_message(message)
+          decoder.send_message(queue.dequeue)
         end
       end
     end

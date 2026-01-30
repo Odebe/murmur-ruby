@@ -64,7 +64,7 @@ module Persistence
           .reject { |c| except.include?(c[:session_id]) }
       end
 
-      def create(queue, app)
+      def create(queue, app, remote_address)
         clients
           .command(:create)
           .call(
@@ -78,6 +78,7 @@ module Persistence
             self_mute:      false,
             self_deaf:      false,
             password:       nil,
+            remote_address: remote_address,
             tcp_queue:      queue,
             version:        {},
             tokens:         [],
@@ -98,6 +99,14 @@ module Persistence
       def by_udp_address(address)
         clients
           .restrict(udp_address: address)
+      end
+
+      def by_remote_address(address)
+        clients.restrict(remote_address: address)
+      end
+
+      def by_same_ip(address)
+        all.select { |c| c[:remote_address].ip_address == address.ip_address }
       end
 
       def set_version(session_id, version)

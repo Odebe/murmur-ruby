@@ -3,10 +3,10 @@
 module Decoders
   # TODO: refactor this mess
   class Udp < Decoders::Generic
-    # define_mapper(
-    #   0 => ::Proto::MumbleUdp::Audio,
-    #   1 => ::Proto::MumbleUdp::Ping
-    # )
+    define_mapper(
+      0 => ::Proto::MumbleUdp::Audio,
+      1 => ::Proto::MumbleUdp::Ping
+    )
 
     UDP_PACKET_SIZE = 1024
 
@@ -46,19 +46,23 @@ module Decoders
 
     def read_encrypted
       data, sender_sockaddr, _rflags, *_controls = read_nonblock(UDP_PACKET_SIZE)
+
       encrypted = StringIO.new(data).binmode
       crypt_header = encrypted.read(4).bytes
 
-      packet_klass =
-        if data.size == 12 && crypt_header == [0, 0, 0, 0]
-          ::Udp::Ping
-        else
-          ::Udp::Encrypted
-        end
+      if data.size == 12 && crypt_header == [0, 0, 0, 0]
+        # legacy ping packet
+        packet = ::Udp::Ping.new(sender: sender_sockaddr)
+        packet.decode(encrypted)
+        packet
+      else
+        ::Udp::RawPacket.new(data, sender_sockaddr)
+      end
+    end
 
-      packet = packet_klass.new(sender: sender_sockaddr)
-      packet.decode(encrypted)
-      packet
+    def decode(raw)
+      type = raw[0].unpack1('C')
+      find_class(type).decode(raw[1..-1])
     end
 
     def send_message(body, target)

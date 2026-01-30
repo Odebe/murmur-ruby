@@ -33,6 +33,10 @@ module Decoders
         def find_type(klass)
           self.class.const_get(:CLASS_TO_TYPE).fetch(klass) { raise Errors::InvalidClass, "klass: #{klass}" }
         end
+
+        def type_eql(type, klass)
+          find_class(type) == klass
+        end
       end
     end
   end

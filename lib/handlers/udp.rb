@@ -41,10 +41,23 @@ module Handlers
 
       within_connection do
         loop do
+          client = nil
           message = decoder.read_encrypted
-          action = dispatcher.call(message)
+          next if message.nil?
 
-          action ? action.new(self, message, nil, app).call : handle_not_defined(message)
+          unless message.legacy?
+            result = find_user_by_address_and_decrypt(message)
+            next unless result
+
+            decrypted_data, client = result
+
+            message = decoder.decode(decrypted_data)
+          end
+
+          action = dispatcher.call(message)
+          handle_not_defined(message) and next if action.nil?
+
+          action.new(self, message, client, app).call
         end
       end
     end
@@ -68,6 +81,47 @@ module Handlers
           decoder.send_message(body, msg.target)
         end
       end
+    end
+
+    def find_user_by_address_and_decrypt(message)
+      found_by_udp = app.db.clients.by_udp_address(message.sender_sockaddr).to_a.last
+      if found_by_udp
+        result = try_decrypt(found_by_udp, message)
+        return result if result
+      end
+
+      found_by_same_ip = app.db.clients.by_same_ip(message.sender_sockaddr).to_a
+      found_by_same_ip.each do |same_ip_client|
+        result = try_decrypt(same_ip_client, message)
+        return result if result
+      end
+
+      app.db.clients.all.each do |client|
+        next if client == found_by_udp || found_by_same_ip.include?(client)
+
+        result = try_decrypt(client, message)
+        return result if result
+      end
+
+      nil
+    end
+
+    def try_decrypt(client, message)
+      crypt_state = client[:crypt_state]
+      return unless crypt_state
+
+      result = crypt_state.decrypt(message.data.bytes)
+      if result.success?
+        app.db.clients.update(client[:session_id], udp_address: message.sender_sockaddr)
+
+        return [result.data.pack('C*'), client]
+      elsif crypt_state.need_resync?
+        crypt_state.reset_last_good!
+
+        build_action(Actions::ResyncCrypto, target: client).call
+      end
+
+      nil
     end
   end
 end
