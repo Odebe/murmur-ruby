@@ -5,6 +5,8 @@ module Actions
     module Incoming
       class UdpTunnel < Dispatch[TcpAction, ::Proto::Mumble::UDPTunnel]
         def handle
+          halt!
+
           authorize!
 
           # clearing udp_address if client starting upd_tunnel

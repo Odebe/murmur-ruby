@@ -4,6 +4,8 @@ module Actions
   module Voice
     class Implementation < UdpAction
       def handle
+        halt!
+
         authorize!
 
         message.session_id = client[:session_id]

@@ -6,6 +6,9 @@ git_source(:github) { |repo_name| "https://github.com/#{repo_name}" }
 
 gem 'zeitwerk'
 
+gem 'logger'
+gem 'ostruct'
+
 gem 'async-debug'
 gem 'async-io'
 
@@ -17,6 +20,7 @@ gem 'timers'
 gem 'rb_mumble_protocol', '~> 0.4.0', github: 'Odebe/rb_mumble_protocol'
 
 gem 'google-protobuf'
+gem 'debug'
 
 gem 'rom', '~> 5.3'
 gem 'rom-yaml'

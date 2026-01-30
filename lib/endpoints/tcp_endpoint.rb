@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require 'async/io'
-require 'async/io/stream'
-
 module Endpoints
   class TcpEndpoint
     attr_reader :endpoint, :app
@@ -27,7 +24,7 @@ module Endpoints
       ssl_context.options |= OpenSSL::SSL::OP_NO_SSLv2
       ssl_context.options |= OpenSSL::SSL::OP_NO_SSLv3
 
-      @endpoint = Async::IO::Endpoint.ssl(
+      @endpoint = IO::Endpoint.ssl(
         app.config.host, app.config.port,
         ssl_context: ssl_context
       )

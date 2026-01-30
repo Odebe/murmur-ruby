@@ -6,7 +6,7 @@ require_relative '../lib/app'
 App.config_path = Pathname(__dir__).join('../run/config.yml')
 
 OptionParser.new do |opts|
-  opts.banner = 'Usage: main.rb [options]'
+  opts.banner = 'Usage: bin/server.rb [options]'
 
   opts.on('--config=PATH', 'Config path') do |v|
     App.config_path = Pathname(v)

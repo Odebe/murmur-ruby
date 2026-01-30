@@ -6,11 +6,10 @@ module Handlers
     option :queue,    default: -> { Async::Queue.new }
     option :finished, default: -> { Async::Condition.new }
 
-    option :stream,     reader: :private, default: -> { Async::IO::Stream.new(io) }
     option :barrier,    reader: :private, default: -> { Async::Barrier.new }
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
 
-    option :decoder, reader: :private, default: -> { Decoders::Tcp.new(stream) }
+    option :decoder, reader: :private, default: -> { Decoders::Tcp.new(io) }
     option :client, reader: :private, default: -> { app.db.clients.create(queue, app) }
 
     def setup!
@@ -48,11 +47,7 @@ module Handlers
         loop do
           message = decoder.read_message
           action = dispatcher.call(message)
-          app.logger.debug("[TCP] #{message.inspect}")
-
           action ? build_action(action, message).call : handle_not_defined(message)
-
-          Async::Task.current.yield
         end
       end
     end
@@ -63,10 +58,9 @@ module Handlers
 
       within_connection do
         loop do
-          # TODO: check it later
-          Async(transient: true) do
-            decoder.send_message(queue.dequeue)
-          end
+          message = queue.dequeue
+          puts("TCP >>: #{message.inspect}")
+          decoder.send_message(message)
         end
       end
     end

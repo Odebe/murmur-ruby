@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 module Decoders
+  # TODO: refactor this mess
   class Udp < Decoders::Generic
+    # define_mapper(
+    #   0 => ::Proto::MumbleUdp::Audio,
+    #   1 => ::Proto::MumbleUdp::Ping
+    # )
+
     UDP_PACKET_SIZE = 1024
 
     VOICE_DICT = {
@@ -35,9 +41,11 @@ module Decoders
       buffer.string
     end
 
-    def read_encrypted
-      data, sender_sockaddr, _rflags, *_controls = @stream.recvmsg(UDP_PACKET_SIZE)
+    wrap_nonblock(:recvmsg_nonblock, as: :read_nonblock)
+    wrap_nonblock(:sendmsg_nonblock, as: :write_nonblock)
 
+    def read_encrypted
+      data, sender_sockaddr, _rflags, *_controls = read_nonblock(UDP_PACKET_SIZE)
       encrypted = StringIO.new(data).binmode
       crypt_header = encrypted.read(4).bytes
 
@@ -54,7 +62,7 @@ module Decoders
     end
 
     def send_message(body, target)
-      @stream.send body, 0, target
+      write_nonblock(body, 0, target)
     end
   end
 end

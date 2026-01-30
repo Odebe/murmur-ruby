@@ -47,6 +47,9 @@ GEM
     console (1.16.2)
       fiber-local
     date (3.3.3)
+    debug (1.11.1)
+      irb (~> 1.10)
+      reline (>= 0.3.8)
     diff-lcs (1.5.0)
     dry-configurable (1.0.1)
       dry-core (~> 1.0, < 2)
@@ -71,6 +74,7 @@ GEM
       dry-inflector (~> 1.0)
       dry-logic (~> 1.4)
       zeitwerk (~> 2.6)
+    erb (6.0.1)
     falcon (0.42.3)
       async
       async-container (~> 0.16.0)
@@ -85,16 +89,18 @@ GEM
       protocol-rack (~> 0.1)
       samovar (~> 2.1)
     fiber-local (1.0.0)
-    google-protobuf (4.33.4-x86_64-darwin)
-      bigdecimal
-      rake (>= 13)
-    google-protobuf (4.33.4-x86_64-linux-gnu)
+    google-protobuf (4.33.4)
       bigdecimal
       rake (>= 13)
     http-accept (2.2.0)
     ice_nine (0.11.2)
+    io-console (0.8.2)
     io-endpoint (0.17.1)
     io-event (1.1.7)
+    irb (1.16.0)
+      pp (>= 0.6.0)
+      rdoc (>= 4.0.0)
+      reline (>= 0.4.2)
     json (2.6.3)
     litecable (0.8.0)
       anyway_config (>= 1.0)
@@ -102,6 +108,7 @@ GEM
       async-websocket (~> 0.22.0)
       trenni
     localhost (1.1.10)
+    logger (1.7.0)
     mail (2.8.1)
       mini_mime (>= 0.1.1)
       net-imap
@@ -124,9 +131,13 @@ GEM
       net-protocol
     nio4r (2.5.9)
     openssl (3.1.0)
+    ostruct (0.6.3)
     parallel (1.22.1)
     parser (3.2.0.0)
       ast (~> 2.4.1)
+    pp (0.6.3)
+      prettyprint
+    prettyprint (0.2.0)
     process-metrics (0.2.1)
       console (~> 1.8)
       samovar (~> 2.1)
@@ -143,12 +154,21 @@ GEM
     protocol-websocket (0.9.1)
       protocol-http (~> 0.2)
       protocol-http1 (~> 0.2)
+    psych (5.3.1)
+      date
+      stringio
     puma (6.3.0)
       nio4r (~> 2.0)
     rack (3.0.8)
     rainbow (3.1.1)
     rake (13.3.1)
+    rdoc (7.1.0)
+      erb
+      psych (>= 4.0.0)
+      tsort
     regexp_parser (2.6.2)
+    reline (0.6.3)
+      io-console (~> 0.5)
     rexml (3.2.5)
     rom (5.3.0)
       rom-changeset (~> 5.3, >= 5.3.0)
@@ -212,12 +232,14 @@ GEM
     samovar (2.2.0)
       console (~> 1.0)
       mapping (~> 1.0)
+    stringio (3.2.0)
     thread-local (1.1.0)
     timeout (0.4.0)
     timers (4.3.5)
     traces (0.11.1)
     transproc (1.1.1)
     trenni (3.14.0)
+    tsort (0.2.0)
     unicode-display_width (2.4.2)
     utopia (2.23.0)
       concurrent-ruby (~> 1.2)
@@ -247,11 +269,14 @@ DEPENDENCIES
   async-io
   byebug
   concurrent-ruby
+  debug
   dry-configurable
   dry-initializer
   dry-types
   google-protobuf
   io-endpoint
+  logger
+  ostruct
   rb_mumble_protocol (~> 0.4.0)!
   rom (~> 5.3)
   rom-yaml

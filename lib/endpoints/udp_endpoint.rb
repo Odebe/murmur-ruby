@@ -1,17 +1,12 @@
 # frozen_string_literal: true
 
-require 'async/io'
-require 'async/io/stream'
-
 module Endpoints
   class UdpEndpoint
     attr_reader :endpoint, :app
 
-    UDP_PACKET_SIZE = 1024
-
     def initialize(app)
       @app      = app
-      @endpoint = Async::IO::Endpoint.udp(app.config.host, app.config.port)
+      @endpoint = IO::Endpoint.udp(app.config.host, app.config.port)
     end
 
     def start!
