@@ -63,7 +63,7 @@ module Actions
         end
 
         def broadcast_announce
-          db.clients.authorized.each { |another_client| post announce, to: another_client }
+          db.clients.authorized.each { |another_client| send_tcp announce, to: another_client }
         end
 
         def check_channel_change
@@ -77,12 +77,8 @@ module Actions
         def check_self_mute
           return unless message.has_self_mute?
 
-          db.clients.update(client[:session_id], self_deaf: message.self_mute)
+          db.clients.update(client[:session_id], self_mute: message.self_mute)
           announce.self_mute = message.self_mute
-          return if message.self_mute
-
-          db.clients.update(client[:session_id], self_deaf: false)
-          announce.self_deaf = false
         end
 
         def check_self_deaf
@@ -90,10 +86,6 @@ module Actions
 
           db.clients.update(client[:session_id], self_deaf: message.self_deaf)
           announce.self_deaf = message.self_deaf
-          return unless message.self_deaf
-
-          db.clients.update(client[:session_id], self_mute: true)
-          announce.self_mute = true
         end
       end
     end

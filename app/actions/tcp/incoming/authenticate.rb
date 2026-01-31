@@ -36,7 +36,7 @@ module Actions
             codec = build(:codec_version)
 
             db.clients.except(client[:session_id]).each do |target|
-              post codec, to: target
+              send_tcp codec, to: target
             end
           end
 
@@ -51,7 +51,7 @@ module Actions
           db.clients.authorized
             .reject { |c| c[:session_id] == client[:session_id] }
             .each { |another_client| reply build(:user_state, client: another_client) }
-            .each { |another_client| post client_state, to: another_client }
+            .each { |another_client| send_tcp client_state, to: another_client }
 
           reply build(:user_state, client: client)
 

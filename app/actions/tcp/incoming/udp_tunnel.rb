@@ -1,11 +1,12 @@
 # frozen_string_literal: true
 
 module Actions
-  module Udp
-    module Encrypted
-      class Audio < Dispatch[UdpAction, ::Udp::Wrappers::Audio]
+  module Tcp
+    module Incoming
+      # Proto::MumbleUdp::Audio sent through Proto::Mumble::UDPTunnel
+      class UdpTunnel < Dispatch[TcpAction, ::Proto::MumbleUdp::Audio]
         def handle
-          app.db.clients.update(client[:session_id], udp_used: true, udp_address: sender_addr)
+          app.db.clients.update(client[:session_id], udp_used: false)
 
           halt! if client[:self_mute]
 

@@ -34,12 +34,12 @@ module Actions
       raise 'abstract method'
     end
 
-    def post(message, to:)
+    def send_tcp(message, to:)
       to[:tcp_queue] << message
     end
 
-    def post_voice(message, to:)
-      app.udp_handler.queue << message.with_target(to[:udp_address])
+    def send_udp(message, to:)
+      app.udp_handler.queue << [to[:udp_address], message]
     end
 
     def authorize!
@@ -65,10 +65,6 @@ module Actions
 
     def with_halt(&block)
       catch(:halt, &block)
-    end
-
-    def current_async(&block)
-      Async::Task.current.async(&block)
     end
   end
 end

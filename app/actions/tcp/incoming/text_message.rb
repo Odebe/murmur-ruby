@@ -30,25 +30,25 @@ module Actions
           targets.uniq!
           return if targets.none?
 
-          targets.each { |t| post message, to: t }
+          targets.each { |t| send_tcp message, to: t }
         end
 
         def check_channel
-          return unless message.has_channel_id?
+          return if message.channel_id.size == 0
 
           clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
           targets.push(*clients)
         end
 
         def check_client
-          return unless message.has_session?
+          return if message.session.size == 0
 
           clients = db.clients.by_sessions(message.session)
           targets.push(*clients)
         end
 
         def check_permission!
-          return unless message.has_tree_id?
+          return if message.tree_id.size == 0
 
           reply build(:permission_denied, reason: 'Tree message not supported')
           halt!
