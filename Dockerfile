@@ -1,4 +1,4 @@
-FROM ruby:3.2.2
+FROM ruby:4.0.1
 
 RUN mkdir /rust
 WORKDIR /rust
