@@ -25,7 +25,7 @@ module Decoders
         packet.ident = encrypted.read(8)
         packet
       else
-        packet = ::Udp::RawPacket.new
+        packet = ::Udp::EncryptedPacket.new
         packet.sender_sockaddr = sender_sockaddr
         packet.data = data
         packet

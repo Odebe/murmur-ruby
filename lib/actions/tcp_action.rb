@@ -12,5 +12,15 @@ module Actions
     def reply(message)
       client[:tcp_queue] << message
     end
+
+    private
+
+    def udp?
+      false
+    end
+
+    def tcp?
+      true
+    end
   end
 end

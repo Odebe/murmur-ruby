@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 module Udp
-  class RawPacket < Packet
-    attr_accessor :data
+  module Wrappers
+    class Ping < Base
+    end
   end
 end

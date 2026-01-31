@@ -6,10 +6,7 @@ module Udp
 
     def self.encode(msg)
       buffer = StringIO.new.binmode
-      # stream = VarintStream.new(buffer)
-
       msg.encode(buffer)
-
       buffer.string
     end
 

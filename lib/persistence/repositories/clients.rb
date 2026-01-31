@@ -78,6 +78,7 @@ module Persistence
             self_mute:      false,
             self_deaf:      false,
             password:       nil,
+            udp_used:       false,
             remote_address: remote_address,
             tcp_queue:      queue,
             version:        {},

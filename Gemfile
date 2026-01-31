@@ -9,7 +9,6 @@ gem 'zeitwerk'
 gem 'logger'
 gem 'ostruct'
 
-gem 'async-debug'
 gem 'async-io'
 
 gem 'io-endpoint'

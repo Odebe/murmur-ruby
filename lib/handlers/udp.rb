@@ -45,8 +45,8 @@ module Handlers
           next if message.nil?
 
           if message.legacy?
-            action = dispatcher.call(message)
-            handle_client_message(action, message, sender_sockaddr: message.sender_sockaddr)
+            wrapped_message = ::Udp::Wrappers.wrap(message, sender_sockaddr: message.sender_sockaddr)
+            handle_client_message(wrapped_message)
             next
           end
 
@@ -56,9 +56,9 @@ module Handlers
           decrypted_data, client = result
 
           proto_message = decoder.decode(decrypted_data)
-          action = dispatcher.call(proto_message)
 
-          handle_client_message(action, proto_message, client: client)
+          wrapped_message = ::Udp::Wrappers.wrap(proto_message, client: client)
+          handle_client_message(wrapped_message)
         end
       end
     end
@@ -89,10 +89,15 @@ module Handlers
       end
     end
 
-    def handle_client_message(action, message, client: nil, sender_sockaddr: nil)
-      handle_not_defined(message) and return if action.nil?
+    def handle_client_message(wrapped_message)
+      action = dispatcher.call(wrapped_message)
 
-      action.new(self, message, client, app, sender_sockaddr: sender_sockaddr).call
+      if action.nil?
+        handle_not_defined(wrapped_message)
+        return
+      end
+
+      action.new(self, app, wrapped_message).call
     end
 
     def find_user_by_address_and_decrypt(message)

@@ -22,8 +22,9 @@ module Persistence
         attribute :tcp_queue,   Types.Instance(Async::Queue)
         attribute :tcp_address, Types.Instance(Addrinfo)
 
+        attribute :udp_used,       Types::Bool
         # "Entry point" data for sending UDP messages to client
-        attribute :udp_address, Types.Instance(Addrinfo).optional
+        attribute :udp_address,    Types.Instance(Addrinfo).optional
         attribute :remote_address, Types.Instance(Addrinfo)
 
         attribute :timers, Types.Instance(Timers::Group)
