@@ -29,6 +29,8 @@ module Actions
           db.clients.set_auth(client[:session_id], message)
           db.clients.update(client[:session_id], user_id: registered_user[:id]) if registered_user
 
+          reply build(:suggest_config)
+
           db.clients.init_crypt(client[:session_id])
           reply build(:crypt_setup)
 
