@@ -30,10 +30,6 @@ module Actions
       raise "abstract method"
     end
 
-    def build_action(action, message: nil, target: nil)
-      action.new(handler, message, target || client, app)
-    end
-
     def reply(_message)
       raise 'abstract method'
     end

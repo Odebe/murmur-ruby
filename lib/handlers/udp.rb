@@ -135,7 +135,7 @@ module Handlers
       elsif crypt_state.need_resync?
         crypt_state.reset_last_good!
 
-        build_action(Actions::ResyncCrypto, target: client).call
+        build_tcp_action(Actions::Tcp::ResyncCrypto, target_client: client).call
       end
 
       nil

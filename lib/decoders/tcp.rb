@@ -32,14 +32,24 @@ module Decoders
     )
 
     def send_message(msg)
-      body = msg.is_a?(Proto::Mumble::UDPTunnel) ? msg.packet : msg.class.encode(msg)
-
       raw_msg =
-        [
-          [find_type(msg.class)].pack('n'),
-          [body.size].pack('N'),
-          body
-        ].join
+        # MumbleUdp::Audio as Mumble::UDPTunnel
+        if msg.is_a?(Proto::MumbleUdp::Audio)
+          body = Proto::MumbleUdp::Audio.encode(msg)
+          [
+            [1].pack('n'), # ::Proto::Mumble::UDPTunnel
+            [body.size + 1].pack('N'),
+            [0].pack('C'), # ::Proto::MumbleUdp::Audio type
+            body
+          ].join
+        else
+          body = msg.class.encode(msg)
+          [
+            [find_type(msg.class)].pack('n'),
+            [body.size].pack('N'),
+            body
+          ].join
+        end
 
       write raw_msg
       flush

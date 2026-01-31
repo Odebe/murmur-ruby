@@ -36,7 +36,7 @@ module Handlers
     def shutdown
       barrier.stop
 
-      build_action(::Actions::Tcp::Disconnect).call
+      build_tcp_action(::Actions::Tcp::Disconnect).call
     end
 
     def from_client_loop
@@ -47,7 +47,7 @@ module Handlers
         loop do
           message = decoder.read_message
           action = dispatcher.call(message)
-          action ? build_action(action, message).call : handle_not_defined(message)
+          action ? build_tcp_action(action, message: message).call : handle_not_defined(message)
         end
       end
     end
@@ -61,10 +61,6 @@ module Handlers
           decoder.send_message(queue.dequeue)
         end
       end
-    end
-
-    def build_action(action, message = nil)
-      action.new(self, message, client, app)
     end
   end
 end
