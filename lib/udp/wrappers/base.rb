@@ -3,13 +3,14 @@
 module Udp
   module Wrappers
     class Base
-      attr_reader :message, :sender_sockaddr, :client
+      attr_reader :message, :sender_sockaddr, :client, :bytesize
 
-      def initialize(message, sender_sockaddr: nil, client: nil, source: :udp)
+      def initialize(message, bytesize:, sender_sockaddr: nil, client: nil, source: :udp)
         @message = message
         @sender_sockaddr = sender_sockaddr
         @client = client
         @source = source
+        @bytesize = bytesize
       end
 
       def sender_addr

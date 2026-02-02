@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   class Base
     attr_reader :client, :app
 

@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class ServerReject < Registry[:server_reject]
       def call(input)

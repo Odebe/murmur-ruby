@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   class Registry
     extend Dry::Core::ClassAttributes
 
@@ -13,7 +13,7 @@ module Messages
         Class.new(Base) do
           define_singleton_method :inherited do |klass|
             super(klass)
-            Messages::Registry.types[message_name] = klass
+            Responses::Registry.types[message_name] = klass
           end
         end
       end

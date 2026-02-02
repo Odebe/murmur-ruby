@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class ServerConfig < Registry[:server_config]
       VALUES = %i[

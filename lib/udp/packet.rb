@@ -7,5 +7,9 @@ module Udp
     def legacy?
       false
     end
+
+    def bytesize
+      raise 'abstract method'
+    end
   end
 end

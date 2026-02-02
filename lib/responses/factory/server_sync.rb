@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class ServerSync < Registry[:server_sync]
       def call(_input)

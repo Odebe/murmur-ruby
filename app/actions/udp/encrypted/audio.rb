@@ -3,14 +3,13 @@
 module Actions
   module Udp
     module Encrypted
+      # TODO: remove code duplication
       class Audio < Dispatch[UdpAction, ::Udp::Wrappers::Audio]
         def handle
           app.db.clients.update(client[:session_id], udp_used: true, udp_address: sender_addr)
 
           halt! if client[:self_mute]
-
-          # TODO: reimplement, pass data size to wrapped_message
-          # halt! unless client[:traffic_shaper].check!(udp_packet.size + 6)
+          halt! unless client[:traffic_shaper].check!(wrapped_message.bytesize)
 
           # Setting context will set the target field to 0
           message_target = message.target
@@ -25,6 +24,7 @@ module Actions
             reply message
           else
             # Ignoring voice targets, send packet to current channel
+            # TODO: implement voice targets
             listeners = db.clients.listeners(client[:room_id], except: [client[:session_id]])
             udp, tcp  = listeners.partition { |l| l[:udp_used].nil? }
 

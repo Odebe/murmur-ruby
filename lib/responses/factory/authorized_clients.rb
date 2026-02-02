@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class AuthorizedClients < Registry[:authorized_clients]
       def call(_input)

@@ -14,6 +14,10 @@ module Udp
       true
     end
 
+    def bytesize
+      12
+    end
+
     def encode(stream)
       stream.write(0)
       stream.write(1)

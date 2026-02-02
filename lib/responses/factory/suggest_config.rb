@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class SuggestConfig < Registry[:suggest_config]
       def call(_input)

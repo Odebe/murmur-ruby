@@ -2,6 +2,8 @@
 
 module Actions
   class UdpAction < Base
+    attr_reader :wrapped_message
+
     def initialize(handler, app, wrapped_message)
       @handler = handler
       @message = wrapped_message.message

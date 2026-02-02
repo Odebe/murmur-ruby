@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class CryptSetup < Registry[:crypt_setup]
       def call(_input)

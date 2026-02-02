@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module Messages
+module Responses
   module Factory
     class AllChannels < Registry[:all_channels]
       def call(_input)

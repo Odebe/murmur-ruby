@@ -3,7 +3,7 @@
 module Actions
   class TcpAction < Base
     def build(name, input = {})
-      Messages::Registry
+      Responses::Registry
         .call(name)
         .new(client, app)
         .call(input)

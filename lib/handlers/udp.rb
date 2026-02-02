@@ -45,7 +45,12 @@ module Handlers
           next if message.nil?
 
           if message.legacy?
-            wrapped_message = ::Udp::Wrappers.wrap(message, sender_sockaddr: message.sender_sockaddr)
+            wrapped_message = ::Udp::Wrappers.wrap(
+              message,
+              bytesize: message.bytesize,
+              sender_sockaddr: message.sender_sockaddr
+            )
+
             handle_client_message(wrapped_message)
             next
           end
@@ -57,7 +62,7 @@ module Handlers
 
           proto_message = decoder.decode(decrypted_data)
 
-          wrapped_message = ::Udp::Wrappers.wrap(proto_message, client: client)
+          wrapped_message = ::Udp::Wrappers.wrap(proto_message, bytesize: message.bytesize, client: client)
           handle_client_message(wrapped_message)
         end
       end
