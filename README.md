@@ -1,5 +1,14 @@
 # MurmurRuby
-Mumble server implemented with Ruby and [async-io](https://github.com/socketry/async-io)/[rb_mumble_protocol](https://github.com/Odebe/rb_mumble_protocol) gems.
+Mumble server implemented with Ruby and [async](https://github.com/socketry/async)/[io-endpoint](https://github.com/socketry/io-endpoint)/[rb_mumble_protocol](https://github.com/Odebe/rb_mumble_protocol) gems.
+
+This implementation tries to take advantage of non-blocking IO and get the most out of Ruby using fibers.
+
+## Compatibility
+It implements Mumble protocol version 1.5.x.
+
+**Clients with legacy voice packets (pre 1.5.x) are not supported.**
+
+You need to use Mumble client version 1.5.x to send voice messages via this server.
 
 ## Installation
 ### Docker compose
@@ -15,8 +24,8 @@ Not all points will be implemented.
   - [ ] TCP
     - [x] Version
       - [x] Save client version
-      - [ ] Send back the actual server version
-    - [x] UDPTunnel (see also 'Voice parsing')
+      - [x] Send back the actual server version
+    - [x] UDPTunnel
       - [x] Loopback
       - [x] Channel speech
       - [ ] Target speech
@@ -64,12 +73,8 @@ Not all points will be implemented.
     - [ ] SuggestConfig
   - [ ] UDP
     - [x] Ping
-    - [x] Voice (see also 'Voice parsing')
+    - [x] Voice
     - [ ] Stable CryptState
-- [x] Voice parsing
-  - [x] OPUS
-  - [x] CELT
-  - [x] Speex
 - [ ] Basic role model
 - [ ] Traffic shaping
   - [x] Throttling
