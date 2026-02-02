@@ -2,6 +2,8 @@
 
 module Decoders
   class Tcp < Decoders::Generic
+    STREAM_CLASS = Streams::Tcp
+
     define_mapper(
       0 => ::Proto::Mumble::Version,
       1 => ::Proto::Mumble::UDPTunnel,
@@ -51,41 +53,20 @@ module Decoders
           ].join
         end
 
-      write raw_msg
-      flush
+      stream.send raw_msg
     end
 
     def read_message
-      type = read(2).unpack1('n')
-      len  = read(4).unpack1('N')
-      body = read(len)
+      type = stream.receive(2).unpack1('n')
+      len  = stream.receive(4).unpack1('N')
+      body = stream.receive(len)
 
       # avoiding UdpTunnel message parsing
-      # cuz message body is literally voice packet and not protobuf message
       if type_eql(type, Proto::Mumble::UDPTunnel)
         ::Proto::MumbleUdp::Audio.decode(body[1..-1])
       else
         find_class(type).decode(body)
       end
-    end
-
-    private
-
-    ############################################################
-
-    wrap_nonblock(:read_nonblock, as: :read_nonblock)
-    wrap_nonblock(:write_nonblock, as: :write_nonblock)
-
-    def read(size)
-      read_nonblock(size) or @stream.eof!
-    end
-
-    def write(body)
-      write_nonblock(body)
-    end
-
-    def flush
-      @stream.flush
     end
   end
 end

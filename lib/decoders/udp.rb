@@ -2,18 +2,20 @@
 
 module Decoders
   class Udp < Decoders::Generic
+    STREAM_CLASS = Streams::Udp
+    UDP_PACKET_SIZE = 1024
+
     define_mapper(
       0 => ::Proto::MumbleUdp::Audio,
       1 => ::Proto::MumbleUdp::Ping
     )
 
-    UDP_PACKET_SIZE = 1024
-
-    wrap_nonblock(:recvmsg_nonblock, as: :read_nonblock)
-    wrap_nonblock(:sendmsg_nonblock, as: :write_nonblock)
+    def self.encode(msg)
+      msg.class.encode(msg)
+    end
 
     def read_encrypted
-      data, sender_sockaddr, _rflags, *_controls = read_nonblock(UDP_PACKET_SIZE)
+      data, sender_sockaddr, _rflags, *_controls = stream.receive(UDP_PACKET_SIZE)
 
       encrypted = StringIO.new(data).binmode
       crypt_header = encrypted.read(4).bytes
@@ -41,11 +43,7 @@ module Decoders
     end
 
     def send_message(body, target)
-      write_nonblock(body, 0, target)
-    end
-
-    def self.encode(msg)
-      msg.class.encode(msg)
+      stream.send(body, 0, target)
     end
   end
 end
