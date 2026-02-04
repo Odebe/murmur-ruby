@@ -42,14 +42,14 @@ openssl x509 -req -sha256 -in "${base}.csr" -out "${base}.crt" -days 731 \
 END
 )
 
-## update the macOS trust store (TODO: add other operating systems)
-#sudo /usr/bin/security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "${root}.crt"
-
 # review files
 echo "--"; openssl x509 -in "${root}.crt" -noout -text
 echo "--"; openssl req  -in "${base}.csr" -noout -text
 echo "--"; openssl x509 -in "${base}.crt" -noout -text
 echo "--";
+
+#mv "${base}.csr" "run/${base}.csr"
+#mv "${root}.srl" "run/${root}.srl"
 
 mv "${root}.crt" 'run/server.ca'
 mv "${base}.key" 'run/server.key'

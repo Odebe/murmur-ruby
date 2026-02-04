@@ -13,7 +13,7 @@ You need to use Mumble client version 1.5.x to send voice messages via this serv
 ## Installation
 ### Docker compose
 * Clone repo `git clone git@github.com:Odebe/murmur-ruby.git`
-* Generate SSL cert `make generate-cert`
+* Generate SSL cert `make generate-test-cert` or use your own (recommended)
 * Build docker image `docker-compose build`
 * Run container `docker-compose up -d`
 
