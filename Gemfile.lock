@@ -97,6 +97,7 @@ GEM
     io-console (0.8.2)
     io-endpoint (0.17.1)
     io-event (1.1.7)
+    io-stream (0.11.1)
     irb (1.16.0)
       pp (>= 0.6.0)
       rdoc (>= 4.0.0)
@@ -275,6 +276,7 @@ DEPENDENCIES
   dry-types
   google-protobuf
   io-endpoint
+  io-stream
   logger
   ostruct
   rb_mumble_protocol (~> 0.4.0)!

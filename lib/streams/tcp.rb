@@ -2,17 +2,18 @@
 
 module Streams
   class Tcp < Generic
-    wrap_nonblock(:read_nonblock, as: :read_nonblock)
-    wrap_nonblock(:write_nonblock, as: :write_nonblock)
+    def initialize(io)
+      super
+
+      @buffered_io = IO::Stream::Buffered.wrap(@io)
+    end
 
     def receive(*args)
-      super(*args) or @io.eof!
+      @buffered_io.read(*args)
     end
 
     def send(*args)
-      super(*args)
-
-      @io.flush
+      @buffered_io.write(*args, flush: true)
     end
   end
 end

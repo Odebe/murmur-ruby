@@ -28,3 +28,5 @@ require 'async/io/protocol/generic'
 
 require "io/endpoint"
 require "io/endpoint/ssl_endpoint"
+
+require "io/stream"

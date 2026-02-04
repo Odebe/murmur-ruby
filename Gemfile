@@ -12,6 +12,7 @@ gem 'ostruct'
 gem 'async-io'
 
 gem 'io-endpoint'
+gem 'io-stream'
 
 gem 'concurrent-ruby'
 gem 'timers'
