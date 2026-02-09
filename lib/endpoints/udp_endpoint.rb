@@ -10,17 +10,20 @@ module Endpoints
     end
 
     def start!
+      Async::Task.current.annotate "UDP endpoint"
       app.logger.info "Starting UDP endpoint at #{app.config.host}:#{app.config.port}"
 
       endpoint.bind do |socket|
         handler = Handlers::Udp.new(socket, app)
         handler.setup!
         handler.start!
+        handler.wait!
       end
     end
 
     def stop!
       endpoint.close!
+      app.logger.info "UDP endpoint stopped"
     end
   end
 end

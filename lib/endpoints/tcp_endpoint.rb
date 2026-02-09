@@ -32,6 +32,7 @@ module Endpoints
     # rubocop:enable Metrics/AbcSize
 
     def start!
+      Async::Task.current.annotate "TCP endpoint"
       app.logger.info "Starting TCP endpoint at #{app.config.host}:#{app.config.port}"
 
       endpoint.accept do |socket|

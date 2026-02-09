@@ -16,6 +16,10 @@ module Handlers
       raise 'abstract method'
     end
 
+    def wait!
+      nil
+    end
+
     private
 
     def within_connection
@@ -23,15 +27,15 @@ module Handlers
 
       begin
         yield
-      rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET
+      rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET, IOError => e
+        app.logger.error(e)
+
         # It's okay, client has disconnected.
       rescue StandardError => e
         app.logger.error(e)
 
         retries += 1
         retry if retries < 3
-      ensure
-        finished.signal(:disconnect)
       end
     end
 

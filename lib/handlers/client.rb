@@ -4,11 +4,7 @@ module Handlers
   # Handler per client (TCP connection)
   class Client < Generic
     option :queue,    default: -> { Async::Queue.new }
-    option :finished, default: -> { Async::Condition.new }
-
-    option :barrier,    reader: :private, default: -> { Async::Barrier.new }
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
-
     option :decoder, reader: :private, default: -> { Decoders::Tcp.new(io) }
     option :client, reader: :private, default: -> { app.db.clients.create(queue, app, io.remote_address) }
 
@@ -17,27 +13,24 @@ module Handlers
     end
 
     def start!
-      start_async_tasks!
+      parent_task = Async::Task.current
 
-      finished.wait
-    ensure
-      shutdown
+      parent_task.async do |task|
+        task.annotate 'client handler'
+
+        task.async { loop { client[:timers].wait } }
+        from = task.async { from_client_loop }
+        _to  = task.async { to_client_loop }
+
+        from.wait
+      ensure
+        task.stop
+
+        build_tcp_action(::Actions::Tcp::Disconnect).call
+      end
     end
 
     private
-
-    def start_async_tasks!
-      barrier.async { loop { client[:timers].wait } }
-      barrier.async { from_client_loop }
-      barrier.async { to_client_loop }
-    end
-
-    # TODO: graceful shutdown
-    def shutdown
-      barrier.stop
-
-      build_tcp_action(::Actions::Tcp::Disconnect).call
-    end
 
     def from_client_loop
       current_task.annotate 'from client loop'

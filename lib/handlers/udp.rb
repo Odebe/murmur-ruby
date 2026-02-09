@@ -4,11 +4,7 @@ module Handlers
   # Handler per server (UDP socket)
   class Udp < Generic
     option :queue,    default: -> { Async::Queue.new }
-    option :finished, default: -> { Async::Condition.new }
-
-    option :barrier,    reader: :private, default: -> { Async::Barrier.new }
     option :dispatcher, reader: :private, default: -> { Actions::Dispatch }
-
     option :decoder, reader: :private, default: -> { Decoders::Udp.new(io) }
 
     def setup!
@@ -16,24 +12,23 @@ module Handlers
     end
 
     def start!
-      start_async_tasks!
+      parent_task = Async::Task.current
 
-      finished.wait
-    ensure
-      shutdown
+      @task = parent_task.async do |task|
+        from = task.async { from_client_loop }
+        _to  = task.async { to_client_loop }
+
+        from.wait
+      ensure
+        task.stop
+      end
+    end
+
+    def wait!
+      @task.wait
     end
 
     private
-
-    def start_async_tasks!
-      barrier.async { from_client_loop }
-      barrier.async { to_client_loop }
-    end
-
-    # TODO: graceful shutdown
-    def shutdown
-      barrier.stop
-    end
 
     def from_client_loop
       current_task.annotate 'UDP receiving loop'

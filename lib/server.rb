@@ -23,22 +23,20 @@ class Server
   end
 
   def start!
-    barrier.async { logger.start! }
-    barrier.async { tcp.start! }
-    barrier.async { udp.start! }
+    Async do |task|
+      task.async { logger.start! }
+      task.async { tcp.start! }
+      task.async { udp.start! }
 
-    # TODO: graceful shutdown
-    # barrier.async { trap.wait { stop! } }
-
-    barrier.wait
+      task.sleep
+    end
   ensure
+    # TODO: graceful shutdown
     stop!
   end
 
   def stop!
     tcp.stop!
     udp.stop!
-
-    # barrier.stop
   end
 end

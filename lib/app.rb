@@ -17,6 +17,10 @@ class App
       server.start!
     end
 
+    def stop!
+      server.stop!
+    end
+
     private
 
     def load_code
