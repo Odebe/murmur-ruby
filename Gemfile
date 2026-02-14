@@ -17,7 +17,7 @@ gem 'io-stream'
 gem 'concurrent-ruby'
 gem 'timers'
 
-gem 'rb_mumble_protocol', '~> 0.4.0', github: 'Odebe/rb_mumble_protocol'
+gem 'rb_mumble_protocol', github: 'Odebe/rb_mumble_protocol', tag: "v0.5.1"
 
 gem 'google-protobuf'
 gem 'debug'
