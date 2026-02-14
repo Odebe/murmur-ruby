@@ -27,9 +27,8 @@ module Handlers
 
       begin
         yield
+        # TODO: refactor this mess later
       rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET, IOError => e
-        app.logger.error(e)
-
         # It's okay, client has disconnected.
       rescue StandardError => e
         app.logger.error(e)
