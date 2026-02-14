@@ -12,6 +12,7 @@ module Handlers
       client[:timers].every(1) { client[:traffic_shaper].reset! }
     end
 
+    # TODO: move work with task in parent class (more sugar)
     def start!
       parent_task = Async::Task.current
 

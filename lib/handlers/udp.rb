@@ -11,6 +11,7 @@ module Handlers
       app.udp_handler = self
     end
 
+    # TODO: move work with task in parent class (more sugar)
     def start!
       parent_task = Async::Task.current
 
@@ -100,34 +101,37 @@ module Handlers
       action.new(self, app, wrapped_message).call
     end
 
+    # TODO: refactor this mess (maybe create new type of decoder)
     def find_user_by_address_and_decrypt(message)
+      message_bytes = message.data.bytes
+
       found_by_udp = app.db.clients.by_udp_address(message.sender_sockaddr).to_a.last
       if found_by_udp
-        result = try_decrypt(found_by_udp, message)
+        result = try_decrypt(found_by_udp, message, message_bytes)
         return result if result
       end
 
       found_by_same_ip = app.db.clients.by_same_ip(message.sender_sockaddr).to_a
       found_by_same_ip.each do |same_ip_client|
-        result = try_decrypt(same_ip_client, message)
+        result = try_decrypt(same_ip_client, message, message_bytes)
         return result if result
       end
 
       app.db.clients.all.each do |client|
         next if client == found_by_udp || found_by_same_ip.include?(client)
 
-        result = try_decrypt(client, message)
+        result = try_decrypt(client, message, message_bytes)
         return result if result
       end
 
       nil
     end
 
-    def try_decrypt(client, message)
+    def try_decrypt(client, message, message_bytes)
       crypt_state = client[:crypt_state]
       return unless crypt_state
 
-      result = crypt_state.decrypt(message.data.bytes)
+      result = crypt_state.decrypt(message_bytes)
       if result.success?
         app.db.clients.update(client[:session_id], udp_address: message.sender_sockaddr)
 
