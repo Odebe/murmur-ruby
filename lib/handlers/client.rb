@@ -25,9 +25,9 @@ module Handlers
 
         from.wait
       ensure
-        task.stop
-
         build_tcp_action(::Actions::Tcp::Disconnect).call
+
+        task.stop
       end
     end
 

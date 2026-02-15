@@ -54,11 +54,6 @@ module Actions
       app.db
     end
 
-    def disconnect!(reason)
-      handler.finished.signal(reason)
-      halt!
-    end
-
     def halt!
       throw(:halt)
     end

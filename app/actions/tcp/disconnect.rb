@@ -7,6 +7,8 @@ module Actions
         session_id = client[:session_id]
         message    = ::Proto::Mumble::UserRemove.new(session: session_id)
 
+        app.logger.info "Disconnected #{client[:username]} (#{session_id})"
+
         app.db.clients.delete(session_id)
         app.db.clients.all.each do |another_client|
           another_client[:tcp_queue] << message

@@ -4,27 +4,22 @@ module Actions
   module Tcp
     module Incoming
       class Authenticate < Dispatch[TcpAction, ::Proto::Mumble::Authenticate]
-        def handle
-          if db.clients.count >= app.config[:max_users]
-            reply build(:server_reject, reason: :ServerFull)
-            disconnect!(:auth_error)
-          end
+        class AuthError < ::ConnectionClosingError; end
 
-          if db.clients.by_name(message.username)
-            reply build(:server_reject, reason: :UsernameInUse)
-            disconnect!(:auth_error)
-          end
+        def handle
+          reject!(:ServerFull) if db.clients.count >= app.config[:max_users]
+          reject!(:UsernameInUse) if db.clients.by_name(message.username)
 
           registered_user = db.users.by_name(message.username)
           if registered_user && registered_user[:password] != message.password
-            reply build(:server_reject, reason: :WrongServerPW)
-            disconnect!(:auth_error)
+            reject! :WrongServerPW
           end
 
           if message.username.empty? || message.username.size > app.config[:max_username_length]
-            reply build(:server_reject, reason: :InvalidUsername)
-            disconnect!(:auth_error)
+            reject! :InvalidUsername
           end
+
+          app.logger.info "Connecting #{message.username} (#{client[:session_id]})"
 
           db.clients.set_auth(client[:session_id], message)
           db.clients.update(client[:session_id], user_id: registered_user[:id]) if registered_user
@@ -59,6 +54,19 @@ module Actions
 
           reply build(:server_sync, client: client)
           reply build(:server_config)
+
+          app.logger.info "Connected #{message.username} (#{client[:session_id]})"
+        end
+
+        private
+
+        def reject!(reason)
+          app.logger.info "Auth rejected #{message.username} (#{client[:session_id]}): #{reason}"
+
+          reply build(:server_reject, reason: reason)
+
+          # TODO: replace with catch/throw, but exception will do for now
+          raise AuthError, reason
         end
       end
     end

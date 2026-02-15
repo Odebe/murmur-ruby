@@ -28,8 +28,12 @@ module Handlers
       begin
         yield
         # TODO: refactor this mess later
-      rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET, IOError => e
-        # It's okay, client has disconnected.
+      rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET, IOError, ConnectionClosingError
+        # It's okay, client has disconected.
+        unless io.closed?
+          current_task.yield
+          io.close
+        end
       rescue StandardError => e
         app.logger.error(e)
 
