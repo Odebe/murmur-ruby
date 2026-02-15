@@ -7,9 +7,9 @@ module Actions
         message = ::Proto::Mumble::CryptSetup.new
         state   = client[:crypt_state]
 
-        message.key          = state.key.pack('C*')
-        message.client_nonce = state.decrypt_nonce.pack('C*')
-        message.server_nonce = state.encrypt_nonce.pack('C*')
+        message.key          = state.key
+        message.client_nonce = state.decrypt_nonce
+        message.server_nonce = state.encrypt_nonce
 
         reply message
       end

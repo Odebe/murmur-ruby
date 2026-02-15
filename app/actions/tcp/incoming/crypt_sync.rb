@@ -11,9 +11,9 @@ module Actions
             state.set_decrypt_nonce(message.client_nonce.bytes)
             # TODO: increment cryptState.uiResync
           else
-            message.key          = state.key.pack('C*')
-            message.client_nonce = state.decrypt_nonce.pack('C*')
-            message.server_nonce = state.encrypt_nonce.pack('C*')
+            message.key          = state.key
+            message.client_nonce = state.decrypt_nonce
+            message.server_nonce = state.encrypt_nonce
 
             reply message
           end

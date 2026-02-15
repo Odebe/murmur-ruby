@@ -32,29 +32,35 @@ module Client
       restart(@last_good)
     end
 
+    # @return [String]
     def key
       @state.key
     end
 
+    # @return [Hash]
     def stats
       @state.stats
     end
 
+    # @return [String]
     def decrypt_nonce
       @state.decrypt_nonce
     end
 
+    # @return [String]
     def encrypt_nonce
       @state.encrypt_nonce
     end
 
+    # @param bytes [String]
     def encrypt(bytes)
       @state.encrypt(bytes).tap { |_encrypted| restart(@last_request) }
     end
 
+    # @param bytes [String]
     def decrypt(bytes)
-      @state.decrypt(bytes).tap do |result|
-        restart(@last_good) if result.success?
+      @state.decrypt(bytes).tap do |_data, result|
+        restart(@last_good) if result == :ok
       end
     end
 

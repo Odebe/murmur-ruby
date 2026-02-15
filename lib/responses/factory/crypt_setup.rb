@@ -7,9 +7,9 @@ module Responses
         state = client[:crypt_state]
 
         Proto::Mumble::CryptSetup.new(
-          key:          state.key.pack('C*'),
-          client_nonce: state.decrypt_nonce.pack('C*'),
-          server_nonce: state.encrypt_nonce.pack('C*')
+          key:          state.key,
+          client_nonce: state.decrypt_nonce,
+          server_nonce: state.encrypt_nonce
         )
       end
     end

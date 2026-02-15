@@ -1,9 +1,9 @@
 GIT
   remote: https://github.com/Odebe/rb_mumble_protocol
-  revision: b9b2d139cc1675953136aa1c32189e7d78099f33
-  tag: v0.5.1
+  revision: 9de2c9845d75736bb93c45603e3d03ca6ddb7c12
+  tag: v0.6.0
   specs:
-    rb_mumble_protocol (0.5.1)
+    rb_mumble_protocol (0.6.0)
 
 GEM
   remote: https://rubygems.org/

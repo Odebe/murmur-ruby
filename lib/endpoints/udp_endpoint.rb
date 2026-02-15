@@ -14,6 +14,8 @@ module Endpoints
       app.logger.info "Starting UDP endpoint at #{app.config.host}:#{app.config.port}"
 
       endpoint.bind do |socket|
+        socket.binmode
+
         handler = Handlers::Udp.new(socket, app)
         handler.setup!
         handler.start!

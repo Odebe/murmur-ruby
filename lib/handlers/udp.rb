@@ -82,7 +82,7 @@ module Handlers
             buffer.write([decoder.find_type(msg.class)].pack('C'))
             buffer.write(body)
 
-            body = client[:crypt_state].encrypt(buffer.string.bytes).pack('C*')
+            body = client[:crypt_state].encrypt(buffer.string)
           end
 
           decoder.send_message(body, target)
@@ -103,39 +103,37 @@ module Handlers
 
     # TODO: refactor this mess (maybe create new type of decoder)
     def find_user_by_address_and_decrypt(message)
-      message_bytes = message.data.bytes
-
       found_by_udp = app.db.clients.by_udp_address(message.sender_sockaddr).to_a.last
       if found_by_udp
-        result = try_decrypt(found_by_udp, message, message_bytes)
+        result = try_decrypt(found_by_udp, message)
         return result if result
       end
 
       found_by_same_ip = app.db.clients.by_same_ip(message.sender_sockaddr).to_a
       found_by_same_ip.each do |same_ip_client|
-        result = try_decrypt(same_ip_client, message, message_bytes)
+        result = try_decrypt(same_ip_client, message)
         return result if result
       end
 
       app.db.clients.all.each do |client|
         next if client == found_by_udp || found_by_same_ip.include?(client)
 
-        result = try_decrypt(client, message, message_bytes)
+        result = try_decrypt(client, message)
         return result if result
       end
 
       nil
     end
 
-    def try_decrypt(client, message, message_bytes)
+    def try_decrypt(client, message)
       crypt_state = client[:crypt_state]
       return unless crypt_state
 
-      result = crypt_state.decrypt(message_bytes)
-      if result.success?
+      data, result = crypt_state.decrypt(message.data)
+      if result == :ok
         app.db.clients.update(client[:session_id], udp_address: message.sender_sockaddr)
 
-        return [result.data.pack('C*'), client]
+        return [data, client]
       elsif crypt_state.need_resync?
         crypt_state.reset_last_good!
 
