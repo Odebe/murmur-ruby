@@ -19,7 +19,7 @@ module Handlers
       parent_task.async do |task|
         task.annotate 'client handler'
 
-        task.async { loop { client[:timers].wait } }
+        task.async { timers_loop }
         from = task.async { from_client_loop }
         _to  = task.async { to_client_loop }
 
@@ -32,6 +32,14 @@ module Handlers
     end
 
     private
+
+    def timers_loop
+      current_task.annotate 'client timers loop'
+
+      loop do
+        client[:timers].wait
+      end
+    end
 
     def from_client_loop
       current_task.annotate 'from client loop'

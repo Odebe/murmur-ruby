@@ -30,15 +30,16 @@ module Handlers
         # TODO: refactor this mess later
       rescue OpenSSL::SSL::SSLError, EOFError, Errno::ECONNRESET, IOError, ConnectionClosingError
         # It's okay, client has disconected.
-        unless io.closed?
-          current_task.yield
-          io.close
-        end
       rescue StandardError => e
         app.logger.error(e)
 
         retries += 1
         retry if retries < 3
+      ensure
+        unless io.closed?
+          current_task.yield
+          io.close
+        end
       end
     end
 
