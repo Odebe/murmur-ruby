@@ -17,14 +17,11 @@ module Decoders
     def read_encrypted
       data, sender_sockaddr, _rflags, *_controls = stream.receive(UDP_PACKET_SIZE)
 
-      encrypted = StringIO.new(data).binmode
-      crypt_header = encrypted.read(4).bytes
-
-      if data.size == 12 && crypt_header == [0, 0, 0, 0]
+      if data.bytesize == 12 && (data.getbyte(0) == 0 && data.getbyte(1) == 0 && data.getbyte(2) == 0 && data.getbyte(3) == 0)
         # legacy ping packet
         packet = ::Udp::Ping.new
         packet.sender_sockaddr = sender_sockaddr
-        packet.ident = encrypted.read(8)
+        packet.ident = data.byteslice(4, 8)
         packet
       else
         packet = ::Udp::EncryptedPacket.new
