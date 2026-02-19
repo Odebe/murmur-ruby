@@ -104,17 +104,17 @@ module Persistence
       end
 
       def set_room(client, new_room_id)
-        current_room = index_client_in_room.get(client.session_id)
+        current_room_id = index_client_in_room.get(client.session_id)
         listener_index = client_room_index(client)
 
-        if current_room
+        if current_room_id
           index_client_in_room.remove(client.session_id)
-          index_clients_in_room.remove(current_room.id, client)
-          listener_index.remove(current_room.room_id, client)
+          index_clients_in_room.remove(current_room_id, client)
+          listener_index.remove(current_room_id, client)
         end
 
         client.room_id = new_room_id
-        index_client_in_room.add(client.session_id, new_room_id)
+        index_client_in_room.set(client.session_id, new_room_id)
         index_clients_in_room.add(new_room_id, client)
         listener_index.add(new_room_id, client) unless client.self_deaf
 

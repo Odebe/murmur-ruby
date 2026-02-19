@@ -70,8 +70,7 @@ module Actions
           return unless message.has_channel_id?
           return unless db.rooms.exists?(message.channel_id)
 
-          # db.clients.update(client, room_id: message.channel_id)
-          db.client.set_room(client, message.channel_id)
+          db.clients.set_room(client, message.channel_id)
 
           announce.channel_id = message.channel_id
         end
@@ -86,7 +85,6 @@ module Actions
         def check_self_deaf
           return unless message.has_self_deaf?
 
-          # db.clients.update(client, self_deaf: message.self_deaf)
           db.clients.set_self_deaf(client, message.self_deaf)
           announce.self_deaf = message.self_deaf
         end
