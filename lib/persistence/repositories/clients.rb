@@ -11,7 +11,6 @@ module Persistence
       index :by_same_ip, type: Indexes::Multi
       index :client_in_room, type: Indexes::Uniq
       index :clients_in_room, type: Indexes::Multi
-
       index :room_tcp_listeners, type: Indexes::Multi
       index :room_udp_listeners, type: Indexes::Multi
 
@@ -77,7 +76,6 @@ module Persistence
         client.status = :initialized
         client.traffic_shaper = ::Client::TrafficShaper.new(app.config.max_bandwidth)
         client.user_id = nil
-        client.room_id = 0
         client.username = nil
         client.self_mute = false
         client.self_deaf = false
@@ -96,9 +94,9 @@ module Persistence
         index_by_remote_address.set(remote_address, client)
         index_by_same_ip.add(remote_address.ip_address, client)
         index_by_status.add(client.status, client)
-        index_client_in_room.set(client.session_id, client.room_id)
-        index_clients_in_room.add(client.room_id, client)
-        index_room_tcp_listeners.add(client.room_id, client)
+
+        # Setting room during authentification
+        # set_room(client, 0)
 
         client
       end
@@ -107,10 +105,10 @@ module Persistence
         current_room_id = index_client_in_room.get(client.session_id)
         listener_index = client_room_index(client)
 
-        if current_room_id
+        unless current_room_id.nil?
           index_client_in_room.remove(client.session_id)
           index_clients_in_room.remove(current_room_id, client)
-          listener_index.remove(current_room_id, client)
+          remove_listener(client, current_room_id)
         end
 
         client.room_id = new_room_id
@@ -134,6 +132,11 @@ module Persistence
 
       def client_room_index(client)
         client.udp_used ? index_room_udp_listeners : index_room_tcp_listeners
+      end
+
+      def remove_listener(client, room_id)
+        index_room_tcp_listeners.remove(room_id, client)
+        index_room_udp_listeners.remove(room_id, client)
       end
 
       def update(client, **args)
@@ -177,7 +180,7 @@ module Persistence
       end
 
       def delete(client)
-        clean_indexes(client.session_id)
+        clean_indexes(client)
         id_pool.release(client.session_id)
       end
     end

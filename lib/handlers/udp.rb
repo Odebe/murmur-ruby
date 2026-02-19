@@ -78,11 +78,12 @@ module Handlers
             client = app.db.clients.by_udp_address(target).to_a.last
             next unless client&.crypt_state
 
-            buffer = StringIO.new.binmode
-            buffer.write([decoder.find_type(msg.class)].pack('C'))
-            buffer.write(body)
+            type = decoder.find_type(msg.class)
+            buffer = String.new(capacity: body.bytesize + 1, encoding: Encoding::BINARY)
+            buffer << [type].pack('C')
+            buffer << body
 
-            body = client.crypt_state.encrypt(buffer.string)
+            body = client.crypt_state.encrypt(buffer)
           end
 
           decoder.send_message(body, target)

@@ -40,8 +40,8 @@ module Persistence
       end
     end
 
-    def clean_indexes(id)
-      @indexes.each_value { |index| index.del_id(id) }
+    def clean_indexes(value)
+      @indexes.each_value { |index| index.remove_by_value(value) }
     end
   end
 end

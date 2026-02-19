@@ -33,32 +33,40 @@ module Decoders
       25 => ::Proto::Mumble::SuggestConfig
     )
 
+    PROTO_TYPE_SIZE = 2
+    PROTO_LEN_SIZE = 4
+    PROTO_HEADER_SIZE = PROTO_TYPE_SIZE + PROTO_LEN_SIZE
+
+    UDP_TUNNEL_TYPE = 1
+    AUDIO_UDP_TYPE = 0
+
     def send_message(msg)
       raw_msg =
         # MumbleUdp::Audio as Mumble::UDPTunnel
         if msg.is_a?(Proto::MumbleUdp::Audio)
           body = Proto::MumbleUdp::Audio.encode(msg)
-          [
-            [1].pack('n'), # ::Proto::Mumble::UDPTunnel
-            [body.size + 1].pack('N'),
-            [0].pack('C'), # ::Proto::MumbleUdp::Audio type
-            body
-          ].join
+          packet_len = body.bytesize + 1
+          raw = String.new(capacity: packet_len + PROTO_HEADER_SIZE, encoding: Encoding::BINARY)
+
+          raw << [UDP_TUNNEL_TYPE, packet_len, AUDIO_UDP_TYPE].pack('nNC')
+          raw << body
         else
           body = msg.class.encode(msg)
-          [
-            [find_type(msg.class)].pack('n'),
-            [body.size].pack('N'),
-            body
-          ].join
+          packet_len = body.bytesize
+          raw = String.new(capacity: packet_len + PROTO_HEADER_SIZE, encoding: Encoding::BINARY)
+
+          type = find_type(msg.class)
+
+          raw << [type, packet_len].pack('nN')
+          raw << body
         end
 
       stream.send raw_msg
     end
 
     def read_message
-      type = stream.receive(2).unpack1('n')
-      len  = stream.receive(4).unpack1('N')
+      type = stream.receive(PROTO_TYPE_SIZE).unpack1('n')
+      len  = stream.receive(PROTO_LEN_SIZE).unpack1('N')
       body = stream.receive(len)
 
       # avoiding UdpTunnel message parsing

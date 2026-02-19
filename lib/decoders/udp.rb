@@ -4,6 +4,7 @@ module Decoders
   class Udp < Decoders::Generic
     STREAM_CLASS = Streams::Udp
     UDP_PACKET_SIZE = 1024
+    LEGACY_PING_HEADER = "\x00\x00\x00\x00".freeze
 
     define_mapper(
       0 => ::Proto::MumbleUdp::Audio,
@@ -17,7 +18,7 @@ module Decoders
     def read_encrypted
       data, sender_sockaddr, _rflags, *_controls = stream.receive(UDP_PACKET_SIZE)
 
-      if data.bytesize == 12 && (data.getbyte(0) == 0 && data.getbyte(1) == 0 && data.getbyte(2) == 0 && data.getbyte(3) == 0)
+      if data.bytesize == 12 && data.byteslice(0, 4) == LEGACY_PING_HEADER
         # legacy ping packet
         packet = ::Udp::Ping.new
         packet.sender_sockaddr = sender_sockaddr
@@ -32,10 +33,10 @@ module Decoders
     end
 
     def decode(raw)
-      type = raw[0].unpack1('C')
-      klass = find_class(type)
-      body = raw[1..-1]
+      type = raw.getbyte(0)
+      body = raw.byteslice(1, raw.bytesize - 1)
 
+      klass = find_class(type)
       klass.decode(body)
     end
 

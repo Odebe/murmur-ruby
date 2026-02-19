@@ -41,7 +41,13 @@ module Actions
 
           build(:all_channels).each { |state| reply state }
 
-          db.clients.update(client, room_id: app.config[:default_room])
+          default_room = app.config[:default_room]
+          db.clients.set_room(client, default_room)
+
+          reply ::Proto::Mumble::PermissionQuery.new(
+            channel_id:  default_room,
+            permissions: Acl.granted_permissions(client, nil)
+          )
 
           client_state = build(:user_state, client: client)
 

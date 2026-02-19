@@ -42,12 +42,13 @@ module Persistence
       end
       alias :remove :del
 
-      def exists?(id)
-        @storage.key?(id)
+      def remove_by_value(id)
+        key = @storage.key(id)
+        @storage.delete(key)
       end
 
-      def del_id(id)
-        del(id)
+      def exists?(id)
+        @storage.key?(id)
       end
     end
   end
