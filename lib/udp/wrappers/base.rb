@@ -14,7 +14,7 @@ module Udp
       end
 
       def sender_addr
-        client.nil? ? sender_sockaddr : client[:udp_address]
+        client.nil? ? sender_sockaddr : client.udp_address
       end
 
       def udp?

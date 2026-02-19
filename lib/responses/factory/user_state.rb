@@ -4,17 +4,19 @@ module Responses
   module Factory
     class UserState < Registry[:user_state]
       def call(input)
+        client = input[:client]
+
         Proto::Mumble::UserState.new(
-          session:                  input[:client][:session_id],
+          session:                  client.session_id,
           actor:                    nil,
-          name:                     input[:client][:username],
-          user_id:                  input[:client][:user_id],
-          channel_id:               input[:client][:room_id],
+          name:                     client.username,
+          user_id:                  client.user_id,
+          channel_id:               client.room_id,
           mute:                     nil,
           deaf:                     nil,
           suppress:                 nil,
-          self_mute:                input[:client][:self_mute],
-          self_deaf:                input[:client][:self_deaf],
+          self_mute:                client.self_mute,
+          self_deaf:                client.self_deaf,
           texture:                  nil,
           plugin_context:           nil,
           plugin_identity:          nil,

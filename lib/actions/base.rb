@@ -35,15 +35,15 @@ module Actions
     end
 
     def send_tcp(message, to:)
-      to[:tcp_queue] << message
+      to.tcp_queue << message
     end
 
     def send_udp(message, to:)
-      app.udp_handler.queue << [to[:udp_address], message]
+      app.udp_handler.queue << [to.udp_address, message]
     end
 
     def authorize!
-      halt! unless db.clients.authorized?(client[:session_id])
+      halt! unless db.clients.authorized?(client)
     end
 
     def message_type

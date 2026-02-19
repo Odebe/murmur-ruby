@@ -5,7 +5,7 @@ module Actions
     module Incoming
       class Ping < Dispatch[TcpAction, ::Proto::Mumble::Ping]
         def handle
-          crypt = client[:crypt_state]
+          crypt = client.crypt_state
 
           if crypt
             stats = crypt.stats

@@ -48,6 +48,6 @@ class Acl
   end
 
   def self.granted_permissions(client, _channel)
-    client[:user_id].nil? ? Permissions::Implemented::DEFAULT : Permissions::Implemented::ALL
+    client.user_id.nil? ? Permissions::Implemented::DEFAULT : Permissions::Implemented::ALL
   end
 end

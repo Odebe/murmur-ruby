@@ -23,7 +23,7 @@ module Actions
         def build_announce
           @targets  = []
           @announce = message
-          @announce.actor = client[:session_id]
+          @announce.actor = client.session_id
         end
 
         def send_announce
@@ -36,7 +36,7 @@ module Actions
         def check_channel
           return if message.channel_id.size == 0
 
-          clients = db.clients.in_rooms(message.channel_id, except: [client[:session_id]])
+          clients = db.rooms.clients_in_rooms(message.channel_id)
           targets.push(*clients)
         end
 

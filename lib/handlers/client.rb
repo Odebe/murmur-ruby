@@ -9,7 +9,7 @@ module Handlers
     option :client, reader: :private, default: -> { app.db.clients.create(queue, app, io.remote_address) }
 
     def setup!
-      client[:timers].every(1) { client[:traffic_shaper].reset! }
+      client.timers.every(1) { client.traffic_shaper.reset! }
     end
 
     # TODO: move work with task in parent class (more sugar)
@@ -37,7 +37,7 @@ module Handlers
       current_task.annotate 'client timers loop'
 
       loop do
-        client[:timers].wait
+        client.timers.wait
       end
     end
 

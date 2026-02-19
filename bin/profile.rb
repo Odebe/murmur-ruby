@@ -18,5 +18,5 @@ begin
 ensure
   result = $profile.stop
   printer = RubyProf::GraphHtmlPrinter.new(result)
-  printer.print(File.open("ruby-proof-2.html", "w"))
+  printer.print(File.open("ruby-proof-3.html", "w"))
 end

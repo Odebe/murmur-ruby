@@ -25,6 +25,7 @@ module Persistence
 
     def reserve(id)
       @mutex.synchronize { @used << id }
+      id
     end
 
     def release(id)

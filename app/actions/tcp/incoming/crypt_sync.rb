@@ -5,7 +5,7 @@ module Actions
     module Incoming
       class CryptSync < Dispatch[TcpAction, ::Proto::Mumble::CryptSetup]
         def handle
-          state = client[:crypt_state]
+          state = client.crypt_state
 
           if message.has_client_nonce?
             state.set_decrypt_nonce(message.client_nonce.bytes)

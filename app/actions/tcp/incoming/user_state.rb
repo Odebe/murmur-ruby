@@ -29,7 +29,7 @@ module Actions
         def check_permission!
           # client may send 0 as "my state before sync"
           return if message.session >= 0
-          return if message.session == client[:session_id]
+          return if message.session == client.session_id
 
           reply build(:permission_denied, reason: 'Permission denied')
           halt!
@@ -49,8 +49,8 @@ module Actions
         def build_announce
           @announce = message.clone
 
-          @announce.session = target[:session_id]
-          @announce.actor   = client[:session_id]
+          @announce.session = target.session_id
+          @announce.actor   = client.session_id
         end
 
         def clear_unsupported_fields
@@ -70,21 +70,24 @@ module Actions
           return unless message.has_channel_id?
           return unless db.rooms.exists?(message.channel_id)
 
-          db.clients.update(client[:session_id], room_id: message.channel_id)
+          # db.clients.update(client, room_id: message.channel_id)
+          db.client.set_room(client, message.channel_id)
+
           announce.channel_id = message.channel_id
         end
 
         def check_self_mute
           return unless message.has_self_mute?
 
-          db.clients.update(client[:session_id], self_mute: message.self_mute)
+          db.clients.update(client, self_mute: message.self_mute)
           announce.self_mute = message.self_mute
         end
 
         def check_self_deaf
           return unless message.has_self_deaf?
 
-          db.clients.update(client[:session_id], self_deaf: message.self_deaf)
+          # db.clients.update(client, self_deaf: message.self_deaf)
+          db.clients.set_self_deaf(client, message.self_deaf)
           announce.self_deaf = message.self_deaf
         end
       end

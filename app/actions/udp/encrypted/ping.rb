@@ -7,7 +7,7 @@ module Actions
         def handle
           if message.request_extended_information
             message.server_version_v2 = ::Version::SUPPORTED_PROTOCOL_VERSION_V2
-            message.users_count   = app.db.clients.all.count
+            message.users_count   = app.db.clients.count
             message.max_bandwidth = app.config.max_bandwidth
             message.max_users     = app.config.max_users
           end

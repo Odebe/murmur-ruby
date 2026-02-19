@@ -6,9 +6,9 @@ module Responses
       def call(_input)
         app.db.clients.authorized.map do |client|
           Proto::Mumble::UserState.new(
-            id:         client[:user_id],
-            session:    client[:session_id],
-            name:       client[:username],
+            id:         client.user_id,
+            session:    client.session_id,
+            name:       client.username,
             channel_id: 0
           )
         end

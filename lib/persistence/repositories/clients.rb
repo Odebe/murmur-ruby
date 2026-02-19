@@ -2,133 +2,183 @@
 
 module Persistence
   module Repositories
-    class Clients < Repository[:clients]
-      auto_struct false
+    class Clients < Repository
+      index :by_id, type: Indexes::Uniq
+      index :by_username, type: Indexes::Uniq
+      index :by_udp_address, type: Indexes::Uniq
+      index :by_remote_address, type: Indexes::Uniq
+      index :by_status, type: Indexes::Multi
+      index :by_same_ip, type: Indexes::Multi
+      index :client_in_room, type: Indexes::Uniq
+      index :clients_in_room, type: Indexes::Multi
+
+      index :room_tcp_listeners, type: Indexes::Multi
+      index :room_udp_listeners, type: Indexes::Multi
 
       def count
-        all.count
+        index_by_id.size
       end
 
-      def init_crypt(session_id)
-        clients
-          .restrict(session_id: session_id)
-          .command(:update)
-          .call(crypt_state: ::Client::CryptoState.new)
+      def by_id(id)
+        index_by_id.get(id)
       end
 
-      def except(session_id)
-        all.reject { |c| c[:session_id] == session_id }
-      end
-
-      def most_popular_codec
-        codec_popularity.max_by { |_k, v| v }&.first
-      end
-
-      def codec_popularity
-        clients.flat_map { |c| c[:celt_versions] }.tally
+      def init_crypt(client)
+        client.crypt_state = ::Client::CryptoState.new
       end
 
       def all
-        clients.to_a
+        index_by_id.values
       end
 
       def authorized
-        clients.restrict(status: :authorized)
+        index_by_status.get(:authorized)
       end
 
-      def authorized?(session_id)
-        authorized.restrict(session_id: session_id).any?
+      def authorized?(client)
+        client.status == :authorized
       end
 
       def by_name(name)
-        clients.restrict(username: name).to_a.last
+        index_by_username.get(name)
       end
 
       def find(session_id)
-        clients.restrict(session_id: session_id).to_a.last
+        index_by_id.get(session_id)
       end
 
       def by_sessions(session_ids)
-        clients.restrict(session_id: session_ids).to_a
+        index_by_id.get_many(session_ids)
       end
 
-      def in_rooms(room_ids, except: [])
-        clients
-          .restrict(room_id: room_ids)
-          .reject { |c| except.include?(c[:session_id]) }
+      def tcp_listeners(room_id)
+        index_room_tcp_listeners.get(room_id)
       end
 
-      def listeners(room_id, except: [])
-        clients
-          .restrict(room_id: room_id, self_deaf: false)
-          .reject { |c| except.include?(c[:session_id]) }
+      def udp_listeners(room_id)
+        index_room_udp_listeners.get(room_id)
+      end
+
+      def set_tcp_listener(client)
+        index_room_udp_listeners.remove(client.room_id, client)
+        index_room_tcp_listeners.add(client.room_id, client)
+      end
+
+      def set_udp_listener(client)
+        index_room_tcp_listeners.remove(client.room_id, client)
+        index_room_udp_listeners.add(client.room_id, client)
       end
 
       def create(queue, app, remote_address)
-        clients
-          .command(:create)
-          .call(
-            timers:         Timers::Group.new,
-            session_id:     id_pool.obtain,
-            status:         :initialized,
-            traffic_shaper: ::Client::TrafficShaper.new(app.config.max_bandwidth),
-            user_id:        nil,
-            room_id:        0,
-            username:       nil,
-            self_mute:      false,
-            self_deaf:      false,
-            password:       nil,
-            udp_used:       false,
-            remote_address: remote_address,
-            tcp_queue:      queue,
-            version:        {},
-            tokens:         [],
-            celt_versions:  [],
-            opus:           nil,
-            client_type:    nil
-          )
-          .last
+        client = Entities::Client.new
+
+        client.timers = Timers::Group.new
+        client.session_id = id_pool.obtain
+        client.status = :initialized
+        client.traffic_shaper = ::Client::TrafficShaper.new(app.config.max_bandwidth)
+        client.user_id = nil
+        client.room_id = 0
+        client.username = nil
+        client.self_mute = false
+        client.self_deaf = false
+        client.password = nil
+        client.udp_used = false
+        client.remote_address = remote_address
+        client.tcp_queue = queue
+        client.version = {}
+        client.tokens = []
+        client.celt_versions = []
+        client.opus = false # TODO: check later, we only use opus now
+        client.client_type = :unknown
+
+        index_by_id.set(client.session_id, client)
+        index_by_username.set(client.username, client)
+        index_by_remote_address.set(remote_address, client)
+        index_by_same_ip.add(remote_address.ip_address, client)
+        index_by_status.add(client.status, client)
+        index_client_in_room.set(client.session_id, client.room_id)
+        index_clients_in_room.add(client.room_id, client)
+        index_room_tcp_listeners.add(client.room_id, client)
+
+        client
       end
 
-      def update(session_id, **args)
-        clients
-          .restrict(session_id: session_id)
-          .command(:update)
-          .call(args)
+      def set_room(client, new_room_id)
+        current_room = index_client_in_room.get(client.session_id)
+        listener_index = client_room_index(client)
+
+        if current_room
+          index_client_in_room.remove(client.session_id)
+          index_clients_in_room.remove(current_room.id, client)
+          listener_index.remove(current_room.room_id, client)
+        end
+
+        client.room_id = new_room_id
+        index_client_in_room.add(client.session_id, new_room_id)
+        index_clients_in_room.add(new_room_id, client)
+        listener_index.add(new_room_id, client) unless client.self_deaf
+
+        true
+      end
+
+      def set_self_deaf(client, deaf)
+        client.self_deaf = deaf
+        listener_index = client_room_index(client)
+
+        if deaf
+          listener_index.remove(client.room_id, client)
+        else
+          listener_index.add(client.room_id, client)
+        end
+      end
+
+      def client_room_index(client)
+        client.udp_used ? index_room_udp_listeners : index_room_tcp_listeners
+      end
+
+      def update(client, **args)
+        args.each do |key, value|
+          next if key == :session_id
+
+          client.send("#{key}=", value)
+        end
       end
 
       def by_udp_address(address)
-        clients
-          .restrict(udp_address: address)
+        index_by_udp_address.get(address)
       end
 
       def by_remote_address(address)
-        clients.restrict(remote_address: address)
+        index_by_remote_address.get(address)
       end
 
       def by_same_ip(address)
-        all.select { |c| c[:remote_address].ip_address == address.ip_address }
+        index_by_same_ip.get(address.ip_address)
       end
 
-      def set_version(session_id, version)
-        clients
-          .restrict(session_id: session_id)
-          .command(:update)
-          .call(version: version.to_hash)
+      def set_version(client, version)
+        client.version = version.to_hash
       end
 
-      def set_auth(session_id, auth)
-        clients
-          .restrict(session_id: session_id)
-          .command(:update)
-          .call(auth.to_hash.merge(status: :authorized))
+      def set_auth(client, auth)
+        index_by_status.remove(client.status, client)
+        index_by_username.remove(client.username)
+
+        client.username = auth.username
+        client.password = auth.password
+        client.tokens = auth.tokens
+        client.celt_versions = auth.celt_versions
+        client.opus = auth.opus
+        client.client_type = auth.client_type
+        client.status = :authorized
+
+        index_by_status.add(client.status, client)
+        index_by_username.set(client.username, client)
       end
 
-      def delete(session_id)
-        clients
-          .dataset
-          .delete_if { |user| user[:session_id] == session_id }
-          .then { |deleted| id_pool.release(session_id) if deleted }
+      def delete(client)
+        clean_indexes(client.session_id)
+        id_pool.release(client.session_id)
       end
     end
   end

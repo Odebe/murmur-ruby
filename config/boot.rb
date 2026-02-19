@@ -11,9 +11,6 @@ require 'dry-initializer'
 
 require 'rb_mumble_protocol'
 
-require 'rom'
-require 'rom-yaml'
-
 require 'logger'
 require 'ostruct'
 

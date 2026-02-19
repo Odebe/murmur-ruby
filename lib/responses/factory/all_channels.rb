@@ -6,10 +6,10 @@ module Responses
       def call(_input)
         app.db.rooms.all.map do |room|
           Proto::Mumble::ChannelState.new(
-            channel_id: room[:id],
-            parent:     room[:parent_id],
-            name:       room[:name],
-            position:   room[:position]
+            channel_id: room.id,
+            parent:     room.parent_id,
+            name:       room.name,
+            position:   room.position
           )
         end
       end

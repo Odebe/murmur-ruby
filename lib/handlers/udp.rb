@@ -76,13 +76,13 @@ module Handlers
           unless msg.is_a?(::Udp::Ping)
             # TODO: pass from action
             client = app.db.clients.by_udp_address(target).to_a.last
-            next unless client && client[:crypt_state]
+            next unless client&.crypt_state
 
             buffer = StringIO.new.binmode
             buffer.write([decoder.find_type(msg.class)].pack('C'))
             buffer.write(body)
 
-            body = client[:crypt_state].encrypt(buffer.string)
+            body = client.crypt_state.encrypt(buffer.string)
           end
 
           decoder.send_message(body, target)
@@ -126,12 +126,12 @@ module Handlers
     end
 
     def try_decrypt(client, message)
-      crypt_state = client[:crypt_state]
+      crypt_state = client.crypt_state
       return unless crypt_state
 
       data, result = crypt_state.decrypt(message.data)
       if result == :ok
-        app.db.clients.update(client[:session_id], udp_address: message.sender_sockaddr)
+        app.db.clients.update(client, udp_address: message.sender_sockaddr)
 
         return [data, client]
       elsif crypt_state.need_resync?

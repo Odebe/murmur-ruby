@@ -10,7 +10,7 @@ module Actions
     end
 
     def reply(message)
-      client[:tcp_queue] << message
+      client.tcp_queue << message
     end
 
     private
