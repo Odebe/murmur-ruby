@@ -75,7 +75,7 @@ module Handlers
 
           unless msg.is_a?(::Udp::Ping)
             # TODO: pass from action
-            client = app.db.clients.by_udp_address(target).to_a.last
+            client = app.db.clients.by_udp_address(target)
             next unless client&.crypt_state
 
             type = decoder.find_type(msg.class)
@@ -132,7 +132,7 @@ module Handlers
 
       data, result = crypt_state.decrypt(message.data)
       if result == :ok
-        app.db.clients.update(client, udp_address: message.sender_sockaddr)
+        app.db.clients.set_udp_address(client, message.sender_sockaddr)
 
         return [data, client]
       elsif crypt_state.need_resync?

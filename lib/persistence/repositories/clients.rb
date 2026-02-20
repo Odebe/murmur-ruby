@@ -81,6 +81,7 @@ module Persistence
         client.self_deaf = false
         client.password = nil
         client.udp_used = false
+        client.udp_address = nil
         client.remote_address = remote_address
         client.tcp_queue = queue
         client.version = {}
@@ -149,6 +150,15 @@ module Persistence
 
       def by_udp_address(address)
         index_by_udp_address.get(address)
+      end
+
+      def set_udp_address(client, address)
+        index_by_udp_address.remove(client.udp_address)
+
+        client.udp_address = address
+        index_by_udp_address.set(address, client)
+
+        true
       end
 
       def by_remote_address(address)

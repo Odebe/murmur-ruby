@@ -6,7 +6,7 @@ module Actions
       # TODO: remove code duplication
       class Audio < Dispatch[UdpAction, ::Udp::Wrappers::Audio]
         def handle
-          app.db.clients.update(client, udp_used: true, udp_address: sender_addr)
+          app.db.clients.update(client, udp_used: true)
           app.db.clients.set_udp_listener(client)
 
           halt! if client.self_mute
