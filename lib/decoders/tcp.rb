@@ -71,7 +71,7 @@ module Decoders
 
       # avoiding UdpTunnel message parsing
       if type_eql(type, Proto::Mumble::UDPTunnel)
-        ::Proto::MumbleUdp::Audio.decode(body[1..-1])
+        ::Proto::MumbleUdp::Audio.decode(body.byteslice(1, body.bytesize - 1))
       else
         find_class(type).decode(body)
       end
