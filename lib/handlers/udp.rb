@@ -80,7 +80,7 @@ module Handlers
 
             type = decoder.find_type(msg.class)
             buffer = String.new(capacity: body.bytesize + 1, encoding: Encoding::BINARY)
-            buffer << [type].pack('C')
+            buffer << type # We can skip `[type].pack('C')` since we know the type is 1 byte
             buffer << body
 
             body = client.crypt_state.encrypt(buffer)
@@ -104,13 +104,13 @@ module Handlers
 
     # TODO: refactor this mess (maybe create new type of decoder)
     def find_user_by_address_and_decrypt(message)
-      found_by_udp = app.db.clients.by_udp_address(message.sender_sockaddr).to_a.last
+      found_by_udp = app.db.clients.by_udp_address(message.sender_sockaddr)
       if found_by_udp
         result = try_decrypt(found_by_udp, message)
         return result if result
       end
 
-      found_by_same_ip = app.db.clients.by_same_ip(message.sender_sockaddr).to_a
+      found_by_same_ip = app.db.clients.by_same_ip(message.sender_sockaddr)
       found_by_same_ip.each do |same_ip_client|
         result = try_decrypt(same_ip_client, message)
         return result if result

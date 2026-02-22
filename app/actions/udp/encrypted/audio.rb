@@ -6,8 +6,10 @@ module Actions
       # TODO: remove code duplication
       class Audio < Dispatch[UdpAction, ::Udp::Wrappers::Audio]
         def handle
-          app.db.clients.update(client, udp_used: true)
-          app.db.clients.set_udp_listener(client)
+          unless client.udp_used
+            app.db.clients.set_udp_used(client, true)
+            app.db.clients.set_udp_listener(client)
+          end
 
           halt! if client.self_mute
           halt! unless client.traffic_shaper.check!(wrapped_message.bytesize)

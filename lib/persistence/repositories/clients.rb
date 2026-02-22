@@ -102,6 +102,14 @@ module Persistence
         client
       end
 
+      def in_room(room_id)
+        index_clients_in_room.get(room_id)
+      end
+
+      def in_rooms(room_ids)
+        index_clients_in_room.get_many(room_ids)
+      end
+
       def set_room(client, new_room_id)
         current_room_id = index_client_in_room.get(client.session_id)
         listener_index = client_room_index(client)
@@ -150,6 +158,10 @@ module Persistence
 
       def by_udp_address(address)
         index_by_udp_address.get(address)
+      end
+
+      def set_udp_used(client, flag)
+        client.udp_used = flag
       end
 
       def set_udp_address(client, address)

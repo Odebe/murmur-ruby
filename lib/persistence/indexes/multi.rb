@@ -20,7 +20,7 @@ module Persistence
       def get_many(keys)
         keys.each_with_object([]) do |key, out|
           v = @storage[key]
-          out.concat(v) if v && !v.empty?
+          out.concat(v.to_a) if v && !v.empty?
         end
       end
 

@@ -7,8 +7,10 @@ module Actions
       # TODO: remove code duplication
       class UdpTunnel < Dispatch[TcpAction, ::Proto::MumbleUdp::Audio]
         def handle
-          app.db.clients.update(client, udp_used: false)
-          app.db.clients.set_tcp_listener(client)
+          if client.udp_used
+            app.db.clients.set_udp_used(client, false)
+            app.db.clients.set_tcp_listener(client)
+          end
 
           halt! if client.self_mute
 
