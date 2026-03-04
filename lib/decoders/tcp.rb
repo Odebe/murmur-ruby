@@ -46,22 +46,21 @@ module Decoders
         if msg.is_a?(Proto::MumbleUdp::Audio)
           body = Proto::MumbleUdp::Audio.encode(msg)
           packet_len = body.bytesize + 1
-          raw = String.new(capacity: packet_len + PROTO_HEADER_SIZE, encoding: Encoding::BINARY)
 
-          raw << [UDP_TUNNEL_TYPE, packet_len, AUDIO_UDP_TYPE].pack('nNC')
-          raw << body
+          msg_buffer << [UDP_TUNNEL_TYPE, packet_len, AUDIO_UDP_TYPE].pack('nNC')
+          msg_buffer << body
         else
           body = msg.class.encode(msg)
           packet_len = body.bytesize
-          raw = String.new(capacity: packet_len + PROTO_HEADER_SIZE, encoding: Encoding::BINARY)
-
           type = find_type(msg.class)
 
-          raw << [type, packet_len].pack('nN')
-          raw << body
+          msg_buffer << [type, packet_len].pack('nN')
+          msg_buffer << body
         end
 
       stream.send raw_msg
+
+      msg_buffer.clear
     end
 
     def read_message

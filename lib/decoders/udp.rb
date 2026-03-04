@@ -16,18 +16,18 @@ module Decoders
     end
 
     def read_encrypted
-      data, sender_sockaddr, _rflags, *_controls = stream.receive(UDP_PACKET_SIZE)
+      _data, sender_sockaddr = stream.receive(UDP_PACKET_SIZE, 0, msg_buffer)
 
-      if data.bytesize == 12 && data.byteslice(0, 4) == LEGACY_PING_HEADER
+      if msg_buffer.bytesize == 12 && msg_buffer.byteslice(0, 4) == LEGACY_PING_HEADER
         # legacy ping packet
         packet = ::Udp::Ping.new
         packet.sender_sockaddr = sender_sockaddr
-        packet.ident = data.byteslice(4, 8)
+        packet.ident = msg_buffer.byteslice(4, 8)
         packet
       else
         packet = ::Udp::EncryptedPacket.new
         packet.sender_sockaddr = sender_sockaddr
-        packet.data = data
+        packet.data = msg_buffer
         packet
       end
     end

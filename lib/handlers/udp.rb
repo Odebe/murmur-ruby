@@ -68,6 +68,9 @@ module Handlers
       current_task.annotate 'UDP sending loop'
       current_task.yield
 
+      # TODO: move somewhere else
+      msg_buffer = String.new(capacity: 1024, encoding: Encoding::BINARY)
+
       within_connection do
         loop do
           target, msg = queue.dequeue
@@ -79,14 +82,15 @@ module Handlers
             next unless client&.crypt_state
 
             type = decoder.find_type(msg.class)
-            buffer = String.new(capacity: body.bytesize + 1, encoding: Encoding::BINARY)
-            buffer << type # We can skip `[type].pack('C')` since we know the type is 1 byte
-            buffer << body
+            msg_buffer << type # We can skip `[type].pack('C')` since we know the type is 1 byte
+            msg_buffer << body
 
-            body = client.crypt_state.encrypt(buffer)
+            body = client.crypt_state.encrypt(msg_buffer)
           end
 
           decoder.send_message(body, target)
+
+          msg_buffer.clear
         end
       end
     end
